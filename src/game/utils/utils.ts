@@ -17,3 +17,11 @@ export function addGui(object: THREE.Object3D, name = "") {
 
   gui.add(object.scale, "x").name(name + " scale x");
 }
+
+export function getLargestAbsoluteEntries(a: THREE.Vector3, b: THREE.Vector3) {
+  const x = Math.abs(Math.max(Math.abs(a.x), Math.abs(b.x)));
+  const y = Math.abs(Math.max(Math.abs(a.y), Math.abs(b.y)));
+  const z = Math.abs(Math.max(Math.abs(a.z), Math.abs(b.z)));
+
+  return new THREE.Vector3(x, y, z);
+}

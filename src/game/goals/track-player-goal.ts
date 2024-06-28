@@ -10,8 +10,6 @@ export class TrackPlayerGoal extends YUKA.CompositeGoal<Zombie> {
   }
 
   override activate(): void {
-    console.log("track player goal activate");
-
     this.clearSubgoals();
 
     const from = new YUKA.Vector3().copy(this.owner.position);
@@ -24,11 +22,10 @@ export class TrackPlayerGoal extends YUKA.CompositeGoal<Zombie> {
   override execute(): void {
     this.status = this.executeSubgoals();
 
-    this.replanIfFailed(); // not sure if I need this...
+    this.replanIfFailed();
   }
 
   override terminate(): void {
-    console.log("track player goal terminate");
     this.clearSubgoals();
   }
 }
