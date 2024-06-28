@@ -2,7 +2,7 @@ import * as YUKA from "yuka";
 import { Zombie } from "../entities/zombie";
 
 export class SeekPlayerGoal extends YUKA.Goal<Zombie> {
-  private lastPathPoint?: YUKA.Vector3;
+  private lastWaypoint?: YUKA.Vector3;
 
   constructor(public owner: Zombie) {
     super(owner);
@@ -38,7 +38,7 @@ export class SeekPlayerGoal extends YUKA.Goal<Zombie> {
       return;
     }
 
-    if (this.lastPathPoint && this.owner.atPosition(this.lastPathPoint)) {
+    if (this.lastWaypoint && this.owner.atPosition(this.lastWaypoint)) {
       this.status = YUKA.Goal.STATUS.COMPLETED;
     }
   }
@@ -72,7 +72,7 @@ export class SeekPlayerGoal extends YUKA.Goal<Zombie> {
     followPathBehaviour.active = true;
     owner.onPathBehaviour.active = true;
 
-    this.lastPathPoint = path[path.length - 1];
+    this.lastWaypoint = path[path.length - 1];
 
     owner.playAnimation("zombie-walk");
   };

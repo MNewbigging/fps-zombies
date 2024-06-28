@@ -20,8 +20,8 @@ export class Zombie extends YUKA.Vehicle {
   private animations = new Map<string, THREE.AnimationAction>();
   private currentAction?: THREE.AnimationAction;
 
+  private lookPosition = new YUKA.Vector3();
   private moveDirection = new YUKA.Vector3();
-  private targetQuaternion = new YUKA.Quaternion();
 
   constructor(
     public pathPlanner: PathPlanner,
@@ -37,6 +37,7 @@ export class Zombie extends YUKA.Vehicle {
 
     // steering
 
+    this.maxTurnRate = Math.PI / 4;
     this.updateOrientation = false;
     this.maxSpeed = 0.25;
 
@@ -126,11 +127,12 @@ export class Zombie extends YUKA.Vehicle {
   private updateAnimations(dt: number) {
     this.mixer?.update(dt);
 
-    // face heading
+    // Direction owner is moving in
+    this.moveDirection.copy(this.velocity).normalize();
+    this.lookPosition.copy(this.position).add(this.moveDirection);
 
-    // this.moveDirection.copy(this.velocity).normalize();
-
-    // this.targetQuaternion.lookAt(this.forward, this.moveDirection, this.up);
+    // Look towards it over time, in case direction does a sudden u-turn
+    this.rotateTo(this.lookPosition, dt, 0.05);
   }
 
   private stayInLevel() {
