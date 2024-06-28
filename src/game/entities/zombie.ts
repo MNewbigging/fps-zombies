@@ -12,11 +12,22 @@ export class Zombie extends YUKA.Vehicle {
   onPathBehaviour: YUKA.OnPathBehavior;
   brain: YUKA.Think<Zombie>;
 
+  private currentRegion: YUKA.Polygon;
+  private currentPosition: YUKA.Vector3;
+  private previousPosition: YUKA.Vector3;
+
   private mixer?: THREE.AnimationMixer;
   private animations = new Map<string, THREE.AnimationAction>();
   private currentAction?: THREE.AnimationAction;
 
-  constructor(public pathPlanner: PathPlanner, public player: Player) {
+  private moveDirection = new YUKA.Vector3();
+  private targetQuaternion = new YUKA.Quaternion();
+
+  constructor(
+    public pathPlanner: PathPlanner,
+    public player: Player,
+    public navmesh: YUKA.NavMesh
+  ) {
     super();
 
     // goals
@@ -26,7 +37,8 @@ export class Zombie extends YUKA.Vehicle {
 
     // steering
 
-    this.maxSpeed = 5;
+    this.updateOrientation = false;
+    this.maxSpeed = 0.25;
 
     this.followPathBehaviour = new YUKA.FollowPathBehavior();
     this.followPathBehaviour.active = false;
@@ -35,7 +47,14 @@ export class Zombie extends YUKA.Vehicle {
     this.onPathBehaviour = new YUKA.OnPathBehavior();
     this.onPathBehaviour.active = false;
     this.onPathBehaviour.path = this.followPathBehaviour.path;
+    this.onPathBehaviour.predictionFactor = 0;
     this.steering.add(this.onPathBehaviour);
+
+    // navmesh
+
+    this.currentPosition = this.position.clone();
+    this.previousPosition = this.position.clone();
+    this.currentRegion = navmesh.getClosestRegion(this.position);
   }
 
   setAnimations(mixer: THREE.AnimationMixer, clips: THREE.AnimationClip[]) {
@@ -65,6 +84,8 @@ export class Zombie extends YUKA.Vehicle {
 
     // could I use a regulator to limit how often new paths are found?
     this.brain.arbitrate();
+
+    this.stayInLevel();
 
     this.updateAnimations(delta);
 
@@ -104,5 +125,38 @@ export class Zombie extends YUKA.Vehicle {
 
   private updateAnimations(dt: number) {
     this.mixer?.update(dt);
+
+    // face heading
+
+    // this.moveDirection.copy(this.velocity).normalize();
+
+    // this.targetQuaternion.lookAt(this.forward, this.moveDirection, this.up);
+  }
+
+  private stayInLevel() {
+    // "currentPosition" represents the final position after the movement for a single
+    // simualation step. it's now necessary to check if this point is still on
+    // the navMesh
+
+    this.currentPosition.copy(this.position);
+
+    this.currentRegion = this.navmesh.clampMovement(
+      this.currentRegion,
+      this.previousPosition,
+      this.currentPosition,
+      this.position // this is the result vector that gets clamped
+    );
+
+    // save this position for the next method invocation
+
+    this.previousPosition.copy(this.position);
+
+    // adjust height of the entity according to the ground
+
+    const distance = this.currentRegion.plane.distanceToPoint(this.position);
+
+    this.position.y -= distance * 0.2; // smooth transition
+
+    return this;
   }
 }

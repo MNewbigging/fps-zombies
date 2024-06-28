@@ -161,9 +161,13 @@ export class GameState {
       }
     });
 
-    const zombie = new Zombie(this.pathPlanner, this.player);
+    const zombie = new Zombie(
+      this.pathPlanner,
+      this.player,
+      this.assetManager.navmesh
+    );
     zombie.scale.multiplyScalar(0.01);
-    zombie.position.set(2, 0, -5);
+    zombie.position.set(2, 0, -1);
     this.addEntity(zombie, renderComponent);
 
     const mixer = new THREE.AnimationMixer(renderComponent);
