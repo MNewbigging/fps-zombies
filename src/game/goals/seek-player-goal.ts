@@ -13,6 +13,9 @@ export class SeekPlayerGoal extends YUKA.Goal<Zombie> {
   override activate(): void {
     const owner = this.owner;
 
+    // start walking
+    owner.playAnimation("zombie-walk");
+
     // Create a new regular and call ready to ensure timers and frequency are set properly
     this.newPathRegulator = new YUKA.Regulator(this.newPathFrequency);
     this.newPathRegulator.ready();
@@ -24,14 +27,16 @@ export class SeekPlayerGoal extends YUKA.Goal<Zombie> {
       owner.player.position.clone(),
       this.onPathFound
     );
-
-    // start walking
-    owner.playAnimation("zombie-walk");
   }
 
   override execute(): void {
     if (!this.active()) {
       return;
+    }
+
+    // Check if we've reached the last waypoint
+    if (this.lastWaypoint && this.owner.atPosition(this.lastWaypoint)) {
+      this.status = YUKA.Goal.STATUS.COMPLETED;
     }
 
     // Get an updated path
@@ -45,11 +50,6 @@ export class SeekPlayerGoal extends YUKA.Goal<Zombie> {
         this.onPathFound
       );
     }
-
-    // Check if we've reached the last waypoint
-    if (this.lastWaypoint && this.owner.atPosition(this.lastWaypoint)) {
-      this.status = YUKA.Goal.STATUS.COMPLETED;
-    }
   }
 
   override terminate(): void {
@@ -59,9 +59,6 @@ export class SeekPlayerGoal extends YUKA.Goal<Zombie> {
     this.owner.path = undefined;
 
     this.owner.onPathBehaviour.active = false;
-
-    // Default to idle animation
-    this.owner.playAnimation("zombie-idle");
   }
 
   private onPathFound = (owner: Zombie, path: YUKA.Vector3[]) => {

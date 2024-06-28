@@ -3,8 +3,9 @@ import * as THREE from "three";
 import { PathPlanner } from "../core/path-planner";
 import { Player } from "./player";
 import { SeekPlayerEvaluator } from "../evaluators/seek-player-evaluator";
+import { AttackPlayerEvaluator } from "../evaluators/attack-player-evaluator";
 
-const POSITION_EQUALITY_TOLERANCE = 1;
+export const POSITION_EQUALITY_TOLERANCE = 1;
 
 export class Zombie extends YUKA.Vehicle {
   path?: Array<YUKA.Vector3>;
@@ -34,6 +35,7 @@ export class Zombie extends YUKA.Vehicle {
 
     this.brain = new YUKA.Think(this);
     this.brain.addEvaluator(new SeekPlayerEvaluator());
+    this.brain.addEvaluator(new AttackPlayerEvaluator());
 
     // steering
 
@@ -110,8 +112,10 @@ export class Zombie extends YUKA.Vehicle {
     nextAction.reset().setEffectiveTimeScale(1).setEffectiveWeight(1);
 
     this.currentAction
-      ? nextAction.crossFadeFrom(this.currentAction, 0.25, false).play()
+      ? nextAction.crossFadeFrom(this.currentAction, 0.5, false).play()
       : nextAction.play();
+
+    this.currentAction = nextAction;
   }
 
   private updateAnimations(dt: number) {

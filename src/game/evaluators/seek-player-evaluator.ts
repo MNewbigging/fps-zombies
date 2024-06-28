@@ -4,8 +4,9 @@ import { SeekPlayerGoal } from "../goals/seek-player-goal";
 
 export class SeekPlayerEvaluator extends YUKA.GoalEvaluator<Zombie> {
   override calculateDesirability(owner: Zombie): number {
-    // Depending on distance to player will either seek or attack...
-    return 1;
+    // Attack evaluator checks for distance and returns 1 or 0
+    // So this can return anything between 0 and 1
+    return 0.5;
   }
 
   override setGoal(owner: Zombie): void {
