@@ -7,6 +7,7 @@ import { Player } from "../entities/player";
 import { createConvexRegionHelper } from "../utils/navmesh-helper";
 import { Zombie } from "../entities/zombie";
 import { PathPlanner } from "./path-planner";
+import { createCellSpaceHelper } from "../utils/cell-space-helper";
 
 export class GameState {
   @observable paused = false;
@@ -25,8 +26,8 @@ export class GameState {
 
     this.setupScene();
 
-    const helper = createConvexRegionHelper(assetManager.navmesh);
-    this.scene.add(helper);
+    // const helper = createConvexRegionHelper(assetManager.navmesh);
+    // this.scene.add(helper);
 
     this.pathPlanner = new PathPlanner(this.assetManager.navmesh);
 
@@ -90,6 +91,34 @@ export class GameState {
     const level = new Level();
     level.name = "level";
     this.addEntity(level, renderComponent);
+
+    // spatial index
+
+    const levelBounds = new THREE.Box3().setFromObject(renderComponent);
+    const levelSize = levelBounds.getSize(new THREE.Vector3());
+    const cells = 5;
+
+    const width = levelSize.x;
+    const height = levelSize.y;
+    const depth = levelSize.z;
+    const cellsX = Math.floor(width / cells);
+    const cellsY = 1;
+    const cellsZ = Math.floor(depth / cells);
+
+    this.assetManager.navmesh.spatialIndex = new YUKA.CellSpacePartitioning(
+      width,
+      height,
+      depth,
+      cellsX,
+      cellsY,
+      cellsZ
+    );
+    this.assetManager.navmesh.updateSpatialIndex();
+
+    // const helper = createCellSpaceHelper(
+    //   this.assetManager.navmesh.spatialIndex
+    // );
+    // this.scene.add(helper);
   }
 
   private setupPlayer() {
