@@ -9,6 +9,12 @@ interface PauseScreenProps {
 
 export const PauseScreen: React.FC<PauseScreenProps> = observer(
   ({ gameState }) => {
-    return <div className="pause-screen"></div>;
+    return (
+      <div className="pause-screen">
+        <div className="menu-button" onClick={gameState.resume}>
+          Resume
+        </div>
+      </div>
+    );
   }
 );

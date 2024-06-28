@@ -4,8 +4,7 @@ import { FpsControls } from "../controls/fps-controls";
 export class Player extends YUKA.MovingEntity {
   head: YUKA.GameEntity;
   height = 1.7;
-
-  private fpsControls: FpsControls;
+  fpsControls: FpsControls;
 
   private currentRegion: YUKA.Polygon;
   private currentPosition: YUKA.Vector3;

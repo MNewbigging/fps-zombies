@@ -53,6 +53,11 @@ export class FpsControls {
     document.removeEventListener("keyup", this.onKeyUp, false);
     document.removeEventListener("mousemove", this.onMouseMove, false);
 
+    this.input.forward = false;
+    this.input.backward = false;
+    this.input.left = false;
+    this.input.right = false;
+
     this.enabled = false;
   }
 

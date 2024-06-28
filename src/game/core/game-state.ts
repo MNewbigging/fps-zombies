@@ -1,13 +1,11 @@
-import { makeAutoObservable, observable } from "mobx";
+import { action, makeAutoObservable, observable } from "mobx";
 import * as THREE from "three";
 import * as YUKA from "yuka";
 import { AssetManager } from "./asset-manager";
 import { Level } from "../entities/level";
 import { Player } from "../entities/player";
-import { createConvexRegionHelper } from "../utils/navmesh-helper";
 import { Zombie } from "../entities/zombie";
 import { PathPlanner } from "./path-planner";
-import { createCellSpaceHelper } from "../utils/cell-space-helper";
 
 export class GameState {
   @observable paused = false;
@@ -39,6 +37,19 @@ export class GameState {
   start() {
     this.update();
   }
+
+  @action pause() {
+    this.player.fpsControls.disable();
+    this.paused = true;
+    console.log("paused");
+  }
+
+  @action resume = () => {
+    this.player.fpsControls.enable();
+    this.paused = false;
+
+    console.log("resumed");
+  };
 
   addEntity(entity: YUKA.GameEntity, renderComponent: THREE.Object3D) {
     renderComponent.matrixAutoUpdate = false;
@@ -82,6 +93,9 @@ export class GameState {
 
     const canvasRoot = document.getElementById("canvas-root");
     canvasRoot?.appendChild(this.renderer.domElement);
+
+    document.addEventListener("pointerlockchange", this.onPointerLockChange);
+    document.addEventListener("pointerlockerror", this.onPointerLockError);
   }
 
   private setupLevel() {
@@ -163,9 +177,11 @@ export class GameState {
     this.time.update();
     const dt = this.time.getDelta();
 
-    this.entityManager.update(dt);
+    if (!this.paused) {
+      this.entityManager.update(dt);
 
-    this.pathPlanner.update();
+      this.pathPlanner.update();
+    }
 
     this.renderer.clear();
 
@@ -196,5 +212,16 @@ export class GameState {
     this.camera.updateProjectionMatrix();
 
     this.renderer.setSize(width, height);
+  };
+
+  private onPointerLockChange = () => {
+    // If exiting
+    if (!document.pointerLockElement) {
+      this.pause();
+    }
+  };
+
+  private onPointerLockError = () => {
+    this.pause();
   };
 }
