@@ -2,6 +2,8 @@ import * as YUKA from "yuka";
 import { Zombie } from "../entities/zombie";
 
 export class SeekPlayerGoal extends YUKA.Goal<Zombie> {
+  private lastPathPoint?: YUKA.Vector3;
+
   constructor(public owner: Zombie) {
     super(owner);
   }
@@ -16,8 +18,8 @@ export class SeekPlayerGoal extends YUKA.Goal<Zombie> {
       // Find a new path
       owner.pathPlanner.findPath(
         owner,
-        this.owner.position,
-        this.owner.player.position,
+        this.owner.position.clone(),
+        this.owner.player.position.clone(),
         this.onPathFound
       );
 
@@ -32,10 +34,12 @@ export class SeekPlayerGoal extends YUKA.Goal<Zombie> {
   }
 
   override execute(): void {
-    if (this.active()) {
-      if (this.owner.atPosition(this.owner.player.position)) {
-        this.status = YUKA.Goal.STATUS.COMPLETED;
-      }
+    if (!this.active()) {
+      return;
+    }
+
+    if (this.lastPathPoint && this.owner.atPosition(this.lastPathPoint)) {
+      this.status = YUKA.Goal.STATUS.COMPLETED;
     }
   }
 
@@ -44,6 +48,8 @@ export class SeekPlayerGoal extends YUKA.Goal<Zombie> {
     this.owner.followPathBehaviour.active = false;
     this.owner.followPathBehaviour.path.clear();
     this.owner.path = undefined;
+
+    this.owner.onPathBehaviour.active = false;
 
     // Default to idle animation
     this.owner.playAnimation("zombie-idle");
@@ -64,6 +70,9 @@ export class SeekPlayerGoal extends YUKA.Goal<Zombie> {
     });
 
     followPathBehaviour.active = true;
+    owner.onPathBehaviour.active = true;
+
+    this.lastPathPoint = path[path.length - 1];
 
     owner.playAnimation("zombie-walk");
   };

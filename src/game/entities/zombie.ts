@@ -2,13 +2,14 @@ import * as YUKA from "yuka";
 import * as THREE from "three";
 import { PathPlanner } from "../core/path-planner";
 import { Player } from "./player";
-import { TrackPlayerEvaluator } from "../evaluators/track-player-evaluator";
+import { SeekPlayerEvaluator } from "../evaluators/seek-player-evaluator";
 
 const POSITION_EQUALITY_TOLERANCE = 1;
 
 export class Zombie extends YUKA.Vehicle {
   path?: Array<YUKA.Vector3>;
   followPathBehaviour: YUKA.FollowPathBehavior;
+  onPathBehaviour: YUKA.OnPathBehavior;
   brain: YUKA.Think<Zombie>;
 
   private mixer?: THREE.AnimationMixer;
@@ -21,15 +22,20 @@ export class Zombie extends YUKA.Vehicle {
     // goals
 
     this.brain = new YUKA.Think(this);
-    this.brain.addEvaluator(new TrackPlayerEvaluator());
+    this.brain.addEvaluator(new SeekPlayerEvaluator());
 
     // steering
 
-    this.maxSpeed = 0.25;
+    this.maxSpeed = 5;
 
     this.followPathBehaviour = new YUKA.FollowPathBehavior();
     this.followPathBehaviour.active = false;
     this.steering.add(this.followPathBehaviour);
+
+    this.onPathBehaviour = new YUKA.OnPathBehavior();
+    this.onPathBehaviour.active = false;
+    this.onPathBehaviour.path = this.followPathBehaviour.path;
+    this.steering.add(this.onPathBehaviour);
   }
 
   setAnimations(mixer: THREE.AnimationMixer, clips: THREE.AnimationClip[]) {
