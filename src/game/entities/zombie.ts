@@ -5,7 +5,7 @@ import { Player } from "./player";
 import { SeekPlayerEvaluator } from "../evaluators/seek-player-evaluator";
 import { AttackPlayerEvaluator } from "../evaluators/attack-player-evaluator";
 
-export const POSITION_EQUALITY_TOLERANCE = 1;
+export const POSITION_EQUALITY_TOLERANCE = 1.4;
 
 export class Zombie extends YUKA.Vehicle {
   path?: Array<YUKA.Vector3>;
@@ -104,9 +104,15 @@ export class Zombie extends YUKA.Vehicle {
   }
 
   playAnimation(name: string) {
+    console.log("playing anim", name);
+
     const nextAction = this.animations.get(name);
     if (!nextAction) {
       throw Error(`Could not find animation with name ${name}`);
+    }
+
+    if (nextAction.getClip().name === this.currentAction?.getClip().name) {
+      return;
     }
 
     nextAction.reset().setEffectiveTimeScale(1).setEffectiveWeight(1);
