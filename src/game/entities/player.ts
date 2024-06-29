@@ -1,16 +1,20 @@
 import * as YUKA from "yuka";
 import { FpsControls } from "../controls/fps-controls";
+import { GameState } from "../core/game-state";
+import { WeaponSystem } from "../core/weapon-system";
 
 export class Player extends YUKA.MovingEntity {
   head: YUKA.GameEntity;
   height = 1.7;
   fpsControls: FpsControls;
+  weaponContainer: YUKA.GameEntity;
+  weaponSystem: WeaponSystem;
 
   private currentRegion: YUKA.Polygon;
   private currentPosition: YUKA.Vector3;
   private previousPosition: YUKA.Vector3;
 
-  constructor(private navmesh: YUKA.NavMesh) {
+  constructor(public gameState: GameState) {
     super();
 
     // the camera is attached to the player's head
@@ -32,7 +36,13 @@ export class Player extends YUKA.MovingEntity {
 
     this.currentPosition = this.position.clone();
     this.previousPosition = this.position.clone();
-    this.currentRegion = navmesh.getClosestRegion(this.position);
+    this.currentRegion = this.gameState.navmesh.getClosestRegion(this.position);
+
+    // weapon setup
+
+    this.weaponContainer = new YUKA.GameEntity();
+    this.head.add(this.weaponContainer);
+    this.weaponSystem = new WeaponSystem(this);
   }
 
   override update(delta: number): this {
@@ -48,7 +58,7 @@ export class Player extends YUKA.MovingEntity {
   private stayInLevel() {
     this.currentPosition.copy(this.position);
 
-    this.currentRegion = this.navmesh.clampMovement(
+    this.currentRegion = this.gameState.navmesh.clampMovement(
       this.currentRegion,
       this.previousPosition,
       this.currentPosition,

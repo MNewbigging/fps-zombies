@@ -11,28 +11,33 @@ import { getLargestAbsoluteEntries } from "../utils/utils";
 export class GameState {
   @observable paused = false;
 
-  private scene = new THREE.Scene();
+  scene = new THREE.Scene();
   private camera = new THREE.PerspectiveCamera();
   private renderer = new THREE.WebGLRenderer({ antialias: true });
 
   private time = new YUKA.Time();
   private entityManager = new YUKA.EntityManager();
+
+  navmesh: YUKA.NavMesh;
+
   private player: Player;
   private pathPlanner: PathPlanner;
 
-  constructor(private assetManager: AssetManager) {
+  constructor(public assetManager: AssetManager) {
     makeAutoObservable(this);
 
     this.setupScene();
 
+    this.navmesh = assetManager.navmesh;
     // const helper = createConvexRegionHelper(assetManager.navmesh);
     // this.scene.add(helper);
 
-    this.pathPlanner = new PathPlanner(this.assetManager.navmesh);
+    this.pathPlanner = new PathPlanner(assetManager.navmesh);
 
     this.setupLevel();
     this.player = this.setupPlayer();
-    this.setupZombie();
+    this.setupZombie(new YUKA.Vector3(2, 0, -1));
+    this.setupZombie(new YUKA.Vector3(2, 0, -5));
   }
 
   start() {
@@ -52,7 +57,7 @@ export class GameState {
   addEntity(entity: YUKA.GameEntity, renderComponent: THREE.Object3D) {
     renderComponent.matrixAutoUpdate = false;
     this.scene.add(renderComponent);
-    entity.setRenderComponent(renderComponent, this.sync);
+    entity.setRenderComponent(renderComponent, sync);
     this.entityManager.add(entity);
   }
 
@@ -139,7 +144,7 @@ export class GameState {
   }
 
   private setupPlayer() {
-    const player = new Player(this.assetManager.navmesh);
+    const player = new Player(this);
 
     this.camera.matrixAutoUpdate = false;
     player.head.setRenderComponent(this.camera, this.syncCamera);
@@ -149,10 +154,8 @@ export class GameState {
     return player;
   }
 
-  private setupZombie() {
-    const renderComponent = this.assetManager.models.get(
-      "zombie"
-    ) as THREE.Object3D;
+  private setupZombie(position: YUKA.Vector3) {
+    const renderComponent = this.assetManager.cloneModel("zombie");
     const texture = this.assetManager.textures.get("zombie-atlas");
     renderComponent.traverse((child) => {
       if (child instanceof THREE.Mesh) {
@@ -167,7 +170,7 @@ export class GameState {
       this.assetManager.navmesh
     );
     zombie.scale.multiplyScalar(0.01);
-    zombie.position.set(2, 0, -1);
+    zombie.position.copy(position);
     this.addEntity(zombie, renderComponent);
 
     const mixer = new THREE.AnimationMixer(renderComponent);
@@ -193,14 +196,6 @@ export class GameState {
     this.renderer.clear();
 
     this.renderer.render(this.scene, this.camera);
-  };
-
-  private sync = (
-    yukaEntity: YUKA.GameEntity,
-    renderComponent: THREE.Object3D
-  ) => {
-    const matrix = yukaEntity.worldMatrix as unknown;
-    renderComponent.matrix.copy(matrix as THREE.Matrix4);
   };
 
   private syncCamera = (
@@ -231,4 +226,12 @@ export class GameState {
   private onPointerLockError = () => {
     this.pause();
   };
+}
+
+export function sync(
+  yukaEntity: YUKA.GameEntity,
+  renderComponent: THREE.Object3D
+) {
+  const matrix = yukaEntity.worldMatrix as unknown;
+  renderComponent.matrix.copy(matrix as THREE.Matrix4);
 }

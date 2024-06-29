@@ -20,6 +20,7 @@ export class FpsControls {
     right: false,
   };
 
+  private elapsed = 0;
   private direction = new YUKA.Vector3();
   private velocity = new YUKA.Vector3();
   private acceleration = 60;
@@ -66,7 +67,11 @@ export class FpsControls {
       return;
     }
 
+    const speed = this.player.getSpeed();
+    this.elapsed += dt * speed;
+
     this.updateVelocity(dt);
+    this.updateWeapon();
   }
 
   private updateVelocity(dt: number) {
@@ -90,6 +95,13 @@ export class FpsControls {
     }
 
     this.player.velocity.copy(velocity).applyRotation(this.player.rotation);
+  }
+
+  private updateWeapon() {
+    const motion = Math.sin(this.elapsed * 1.2);
+
+    this.player.weaponContainer.position.x = motion * 0.005;
+    this.player.weaponContainer.position.y = Math.abs(motion) * 0.002;
   }
 
   private onKeyDown = (event: KeyboardEvent) => {

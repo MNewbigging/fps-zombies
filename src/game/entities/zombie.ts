@@ -85,7 +85,6 @@ export class Zombie extends YUKA.Vehicle {
 
     this.brain.execute();
 
-    // could I use a regulator to limit how often new paths are found?
     this.brain.arbitrate();
 
     this.stayInLevel();

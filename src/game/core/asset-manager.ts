@@ -1,5 +1,6 @@
 import * as YUKA from "yuka";
 import * as THREE from "three";
+import * as SkeletonUtils from "three/examples/jsm/utils/SkeletonUtils";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import { RGBELoader } from "three/examples/jsm/loaders/RGBELoader";
 import { FBXLoader } from "three/examples/jsm/loaders/FBXLoader";
@@ -11,6 +12,32 @@ export class AssetManager {
   navmesh!: YUKA.NavMesh; // this ! beats a whole load of if statements elsewhere (remind me why i'm using ts again?)
 
   private loadingManager = new THREE.LoadingManager();
+
+  cloneModel(name: string): THREE.Object3D {
+    const model = this.models.get(name);
+    if (model) {
+      return SkeletonUtils.clone(model);
+    }
+
+    // Ensure we always return an object 3d
+    return new THREE.Mesh(
+      new THREE.SphereGeometry(),
+      new THREE.MeshBasicMaterial({ color: "red" })
+    );
+  }
+
+  applyModelTexture(model: THREE.Object3D, textureName: string) {
+    const texture = this.textures.get(textureName);
+    if (!texture) {
+      return;
+    }
+
+    model.traverse((child) => {
+      if (child instanceof THREE.Mesh) {
+        child.material.map = texture;
+      }
+    });
+  }
 
   load(): Promise<void> {
     const rgbeLoader = new RGBELoader(this.loadingManager);
@@ -53,6 +80,15 @@ export class AssetManager {
     zombieTexture.matrixAutoUpdate = false;
     zombieTexture.encoding = THREE.sRGBEncoding;
     this.textures.set("zombie-atlas", zombieTexture);
+
+    // weapon texture atlas
+
+    const weaponUrl = new URL("/textures/Wep_Skin_26.png", import.meta.url)
+      .href;
+    const weaponTexture = textureLoader.load(weaponUrl);
+    weaponTexture.matrixAutoUpdate = false;
+    weaponTexture.encoding = THREE.sRGBEncoding;
+    this.textures.set("weapon-atlas", weaponTexture);
   }
 
   private loadModels(gltfLoader: GLTFLoader, fbxLoader: FBXLoader) {
@@ -75,6 +111,14 @@ export class AssetManager {
       this.prepModel(group);
       this.models.set("zombie", group);
     });
+
+    // pistol
+
+    const pistolUrl = new URL("/models/pistol.fbx", import.meta.url).href;
+    fbxLoader.load(pistolUrl, (group) => {
+      this.scaleSyntyModel(group);
+      this.models.set("pistol", group);
+    });
   }
 
   private prepModel(model: THREE.Object3D) {
@@ -87,6 +131,12 @@ export class AssetManager {
         child.updateMatrix();
       }
     });
+  }
+
+  private scaleSyntyModel(group: THREE.Group) {
+    // Synty models need scale adjusting, unless done in blender beforehand
+    group.scale.multiplyScalar(0.01);
+    group.updateMatrixWorld();
   }
 
   private loadNavmesh() {
