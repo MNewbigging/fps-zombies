@@ -6,19 +6,23 @@ interface Input {
   backward: boolean;
   left: boolean;
   right: boolean;
+  mouseDown: boolean;
 }
+
+const INPUT_DEFAULT: Input = {
+  forward: false,
+  backward: false,
+  left: false,
+  right: false,
+  mouseDown: false,
+};
 
 const PI05 = Math.PI / 2;
 
 export class FpsControls {
   private enabled = false;
 
-  private input: Input = {
-    forward: false,
-    backward: false,
-    left: false,
-    right: false,
-  };
+  private input: Input = INPUT_DEFAULT;
 
   private elapsed = 0;
   private direction = new YUKA.Vector3();
@@ -39,6 +43,8 @@ export class FpsControls {
     document.addEventListener("keydown", this.onKeyDown, false);
     document.addEventListener("keyup", this.onKeyUp, false);
     document.addEventListener("mousemove", this.onMouseMove, false);
+    document.addEventListener("mousedown", this.onMouseDown, false);
+    document.addEventListener("mouseup", this.onMouseUp, false);
 
     document.body.requestPointerLock();
 
@@ -53,11 +59,10 @@ export class FpsControls {
     document.removeEventListener("keydown", this.onKeyDown, false);
     document.removeEventListener("keyup", this.onKeyUp, false);
     document.removeEventListener("mousemove", this.onMouseMove, false);
+    document.removeEventListener("mousedown", this.onMouseDown, false);
+    document.removeEventListener("mouseup", this.onMouseUp, false);
 
-    this.input.forward = false;
-    this.input.backward = false;
-    this.input.left = false;
-    this.input.right = false;
+    this.input = INPUT_DEFAULT;
 
     this.enabled = false;
   }
@@ -147,6 +152,19 @@ export class FpsControls {
 
       this.player.rotation.fromEuler(0, this.movementX, 0); // yaw
       this.player.head.rotation.fromEuler(this.movementY, 0, 0);
+    }
+  };
+
+  private onMouseDown = (event: MouseEvent) => {
+    if (this.enabled && event.button === 0) {
+      this.input.mouseDown = true;
+      this.player.shoot();
+    }
+  };
+
+  private onMouseUp = (event: MouseEvent) => {
+    if (this.enabled && event.button === 0) {
+      this.input.mouseDown = false;
     }
   };
 }

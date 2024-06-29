@@ -55,6 +55,14 @@ export class Player extends YUKA.MovingEntity {
     return this;
   }
 
+  shoot() {
+    if (!this.weaponSystem.canShoot()) {
+      return;
+    }
+
+    //
+  }
+
   private stayInLevel() {
     this.currentPosition.copy(this.position);
 

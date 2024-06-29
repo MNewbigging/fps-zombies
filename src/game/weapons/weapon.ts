@@ -7,10 +7,17 @@ export class Weapon extends YUKA.GameEntity {
   reserveAmmo = 0;
   reserveLimit = 0;
 
+  private timeBetweenShots = 1; // 1 rpm default
+  private time = new YUKA.Time();
+
   constructor(public owner: Player) {
     super();
 
     this.canActivateTrigger = false;
+  }
+
+  setRpm(rpm: number) {
+    this.timeBetweenShots = 1 / (rpm / 60);
   }
 
   addAmmo(ammoCount: number) {
@@ -27,6 +34,11 @@ export class Weapon extends YUKA.GameEntity {
   }
 
   reload() {}
+
+  canShoot() {
+    this.time.update();
+    return this.time.getElapsed() >= this.timeBetweenShots;
+  }
 
   shoot() {}
 
