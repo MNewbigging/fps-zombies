@@ -151,6 +151,8 @@ export class GameState {
 
     this.entityManager.add(player);
 
+    player.weaponSystem.equipPistol();
+
     return player;
   }
 

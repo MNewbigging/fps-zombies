@@ -116,7 +116,6 @@ export class AssetManager {
 
     const pistolUrl = new URL("/models/pistol.fbx", import.meta.url).href;
     fbxLoader.load(pistolUrl, (group) => {
-      this.scaleSyntyModel(group);
       this.models.set("pistol", group);
     });
   }
@@ -131,12 +130,6 @@ export class AssetManager {
         child.updateMatrix();
       }
     });
-  }
-
-  private scaleSyntyModel(group: THREE.Group) {
-    // Synty models need scale adjusting, unless done in blender beforehand
-    group.scale.multiplyScalar(0.01);
-    group.updateMatrixWorld();
   }
 
   private loadNavmesh() {

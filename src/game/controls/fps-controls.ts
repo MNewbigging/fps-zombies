@@ -71,7 +71,6 @@ export class FpsControls {
     this.elapsed += dt * speed;
 
     this.updateVelocity(dt);
-    this.updateWeapon();
   }
 
   private updateVelocity(dt: number) {
@@ -95,13 +94,6 @@ export class FpsControls {
     }
 
     this.player.velocity.copy(velocity).applyRotation(this.player.rotation);
-  }
-
-  private updateWeapon() {
-    const motion = Math.sin(this.elapsed * 1.2);
-
-    this.player.weaponContainer.position.x = motion * 0.005;
-    this.player.weaponContainer.position.y = Math.abs(motion) * 0.002;
   }
 
   private onKeyDown = (event: KeyboardEvent) => {
