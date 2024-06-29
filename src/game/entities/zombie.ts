@@ -104,8 +104,6 @@ export class Zombie extends YUKA.Vehicle {
   }
 
   playAnimation(name: string) {
-    console.log("playing anim", name);
-
     const nextAction = this.animations.get(name);
     if (!nextAction) {
       throw Error(`Could not find animation with name ${name}`);

@@ -59,6 +59,9 @@ export class SeekPlayerGoal extends YUKA.Goal<Zombie> {
     this.owner.path = undefined;
 
     this.owner.onPathBehaviour.active = false;
+
+    // Clear velocity
+    this.owner.velocity.set(0, 0, 0);
   }
 
   private onPathFound = (owner: Zombie, path: YUKA.Vector3[]) => {
