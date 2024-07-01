@@ -61,6 +61,15 @@ export class GameState {
     this.entityManager.add(entity);
   }
 
+  removeEntity(entity: YUKA.GameEntity) {
+    this.entityManager.remove(entity);
+
+    const e = entity as any;
+    if (e._renderComponent !== null) {
+      this.scene.remove(e._renderComponent);
+    }
+  }
+
   checkProjectileIntersection() {
     /**
      * Should accept a projectile game entity as an argument

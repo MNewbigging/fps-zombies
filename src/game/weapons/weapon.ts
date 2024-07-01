@@ -7,8 +7,8 @@ export class Weapon extends YUKA.GameEntity {
   reserveAmmo = 0;
   reserveLimit = 0;
 
-  private timeBetweenShots = 1; // 1 rpm default
-  private time = new YUKA.Time();
+  private msBetweenShots = 1; // 1 rpm default
+  private lastShotTime = performance.now();
 
   constructor(public owner: Player) {
     super();
@@ -17,7 +17,7 @@ export class Weapon extends YUKA.GameEntity {
   }
 
   setRpm(rpm: number) {
-    this.timeBetweenShots = 1 / (rpm / 60);
+    this.msBetweenShots = (rpm / 60) * 1000;
   }
 
   addAmmo(ammoCount: number) {
@@ -36,11 +36,27 @@ export class Weapon extends YUKA.GameEntity {
   reload() {}
 
   canShoot() {
-    this.time.update();
-    return this.time.getElapsed() >= this.timeBetweenShots;
+    const now = performance.now();
+    const sinceLast = now - this.lastShotTime;
+
+    return sinceLast >= this.msBetweenShots;
   }
 
-  shoot() {}
+  shoot() {
+    if (!this.canShoot()) {
+      console.log("wait");
+      return;
+    }
+
+    this.lastShotTime = performance.now();
+
+    // Determine if anything was hit
+
+    // Create a projectile to move towards hit point
+    // If there was nothing hit, the projectile goes so far
+
+    console.log("pew");
+  }
 
   lower() {}
 

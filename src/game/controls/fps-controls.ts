@@ -158,7 +158,7 @@ export class FpsControls {
   private onMouseDown = (event: MouseEvent) => {
     if (this.enabled && event.button === 0) {
       this.input.mouseDown = true;
-      this.player.shoot();
+      this.player.weaponSystem.shoot();
     }
   };
 

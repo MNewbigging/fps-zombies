@@ -7,8 +7,8 @@ import { Pistol } from "../weapons/pistol";
 
 export class WeaponSystem {
   // can only hold two weapons at once
-  currentWeapon?: Weapon;
-  secondWeapon?: Weapon;
+  private currentWeapon?: Weapon;
+  private secondWeapon?: Weapon;
 
   private pistolRenderComponent: THREE.Object3D;
 
@@ -30,6 +30,11 @@ export class WeaponSystem {
 
   canShoot() {
     return this.currentWeapon?.canShoot() ?? false;
+  }
+
+  shoot() {
+    // Shoot the equipped gun
+    this.currentWeapon?.shoot();
   }
 
   private setupPistolRenderComponent() {
