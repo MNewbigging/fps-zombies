@@ -100,6 +100,14 @@ export class AssetManager {
     brTexture.matrixAutoUpdate = false;
     brTexture.encoding = THREE.sRGBEncoding;
     this.textures.set("battle-royale-atlas", brTexture);
+
+    // bullet hole
+
+    const bulletHoleUrl = new URL("/textures/bullet_hole.png", import.meta.url)
+      .href;
+    const bulletHoleTexture = textureLoader.load(bulletHoleUrl);
+    bulletHoleTexture.matrixAutoUpdate = false;
+    this.textures.set("bullet-hole", bulletHoleTexture);
   }
 
   private loadModels(gltfLoader: GLTFLoader, fbxLoader: FBXLoader) {

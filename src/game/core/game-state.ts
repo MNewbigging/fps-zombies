@@ -7,6 +7,7 @@ import { Player } from "../entities/player";
 import { Zombie } from "../entities/zombie";
 import { PathPlanner } from "./path-planner";
 import { getLargestAbsoluteEntries } from "../utils/utils";
+import { Projectile } from "../weapons/projectile";
 
 export class GameState {
   @observable paused = false;
@@ -222,6 +223,11 @@ export class GameState {
     this.renderer.clear();
 
     this.renderer.render(this.scene, this.camera);
+  };
+
+  private onProjectileHit = (projectile: Projectile) => {
+    // Place decal - but only on static targets...
+    // Don't want bullet objects after all, need a line...
   };
 
   private syncCamera = (

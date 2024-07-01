@@ -97,16 +97,13 @@ export class Player extends YUKA.MovingEntity {
   addBullet(ray: YUKA.Ray, targetPosition: YUKA.Vector3) {
     const assetManager = this.gameState.assetManager;
 
-    const bulletLine = assetManager.models.get("bullet").clone();
-    assetManager.applyModelTexture(bulletLine, "weapon-atlas");
-    //bulletLine.visible = false;
+    const renderComponent = assetManager.models.get("bullet-line").clone();
+    // assetManager.applyModelTexture(renderComponent, "weapon-atlas");
 
-    const bullet = new Projectile(this, ray);
+    const bullet = new Projectile(this, ray, targetPosition);
     bullet.lookAt(targetPosition);
 
-    this.gameState.addEntity(bullet, bulletLine);
-
-    console.log("added bullet");
+    this.gameState.addEntity(bullet, renderComponent);
   }
 
   private stayInLevel() {

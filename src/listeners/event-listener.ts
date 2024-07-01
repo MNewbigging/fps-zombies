@@ -1,7 +1,8 @@
 import * as THREE from "three";
+import { Projectile } from "../game/weapons/projectile";
 
 export interface EventMap {
-  'event-name': null; 
+  "projectile-hit": Projectile;
 }
 
 type EventCallback = (event: any) => void;
@@ -31,3 +32,5 @@ export class EventListener {
     callbacks.forEach((cb) => cb(event));
   }
 }
+
+export const eventListener = new EventListener();

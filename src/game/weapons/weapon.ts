@@ -9,6 +9,7 @@ export class Weapon extends YUKA.GameEntity {
 
   private msBetweenShots = 1000; // 60 rpm default
   private lastShotTime = performance.now();
+  private spread = new YUKA.Vector3();
 
   constructor(public player: Player) {
     super();
@@ -65,6 +66,12 @@ export class Weapon extends YUKA.GameEntity {
     ray.direction.subVectors(targetPosition, ray.origin).normalize();
 
     // bullet spread
+
+    this.spread.x = (1 - Math.random() * 2) * 0.01;
+    this.spread.y = (1 - Math.random() * 2) * 0.01;
+    this.spread.z = (1 - Math.random() * 2) * 0.01;
+
+    ray.direction.add(this.spread).normalize();
 
     // add bullet to world
 

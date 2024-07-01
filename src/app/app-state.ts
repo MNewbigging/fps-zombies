@@ -11,7 +11,6 @@ export class AppState {
   gameState?: GameState;
 
   private assetManager = new AssetManager();
-  private events = new EventListener();
 
   constructor() {
     makeAutoObservable(this);
