@@ -7,17 +7,17 @@ export class Weapon extends YUKA.GameEntity {
   reserveAmmo = 0;
   reserveLimit = 0;
 
-  private msBetweenShots = 1; // 1 rpm default
+  private msBetweenShots = 1000; // 60 rpm default
   private lastShotTime = performance.now();
 
-  constructor(public owner: Player) {
+  constructor(public player: Player) {
     super();
 
     this.canActivateTrigger = false;
   }
 
   setRpm(rpm: number) {
-    this.msBetweenShots = (rpm / 60) * 1000;
+    this.msBetweenShots = (1 / (rpm / 60)) * 1000;
   }
 
   addAmmo(ammoCount: number) {
@@ -38,11 +38,14 @@ export class Weapon extends YUKA.GameEntity {
   canShoot() {
     const now = performance.now();
     const sinceLast = now - this.lastShotTime;
+    const canFire = sinceLast >= this.msBetweenShots;
 
-    return sinceLast >= this.msBetweenShots;
+    const hasAmmo = this.magAmmo > 0;
+
+    return canFire && hasAmmo;
   }
 
-  shoot() {
+  shoot(targetPosition: YUKA.Vector3) {
     if (!this.canShoot()) {
       console.log("wait");
       return;
@@ -50,12 +53,24 @@ export class Weapon extends YUKA.GameEntity {
 
     this.lastShotTime = performance.now();
 
-    // Determine if anything was hit
+    // audio
 
-    // Create a projectile to move towards hit point
-    // If there was nothing hit, the projectile goes so far
+    // animation
 
-    console.log("pew");
+    // create bullet
+
+    const ray = new YUKA.Ray();
+
+    this.getWorldPosition(ray.origin);
+    ray.direction.subVectors(targetPosition, ray.origin);
+
+    // bullet spread
+
+    // add bullet to world
+
+    this.player.addBullet(ray);
+
+    // adjust ammo
   }
 
   lower() {}

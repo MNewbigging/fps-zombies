@@ -13,32 +13,29 @@ import { Player } from "../entities/player";
  */
 
 export class Projectile extends YUKA.MovingEntity {
-  private lifetime = 1;
+  private lifetime = 100;
   private currentLifetime = 0;
 
-  constructor(
-    public player: Player,
-    public startPoint: YUKA.Vector3,
-    public endPoint: YUKA.Vector3
-  ) {
+  constructor(public player: Player, public ray: YUKA.Ray) {
     super();
 
     this.canActivateTrigger = false;
     this.updateOrientation = false;
 
     // Velocity never changes - work it out once
-    this.maxSpeed = 400;
+    this.maxSpeed = 1;
 
-    const direction = endPoint.clone().sub(startPoint).normalize();
-    this.velocity.copy(direction).multiplyScalar(this.maxSpeed);
+    this.position.copy(ray.origin);
+    this.velocity.copy(ray.direction).multiplyScalar(this.maxSpeed);
+    this.rotation.fromEuler(0, Math.PI, 0);
   }
 
   override update(delta: number): this {
     // Remove if lifetime is up
     this.currentLifetime += delta;
     if (this.currentLifetime > this.lifetime) {
-      // Remove self
       this.player.gameState.removeEntity(this);
+
       return this;
     }
 

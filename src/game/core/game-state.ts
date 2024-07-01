@@ -14,11 +14,10 @@ export class GameState {
   scene = new THREE.Scene();
   private camera = new THREE.PerspectiveCamera();
   private renderer = new THREE.WebGLRenderer({ antialias: true });
+  private raycaster = new THREE.Raycaster();
 
   private time = new YUKA.Time();
   private entityManager = new YUKA.EntityManager();
-
-  navmesh: YUKA.NavMesh;
 
   private player: Player;
   private pathPlanner: PathPlanner;
@@ -28,7 +27,6 @@ export class GameState {
 
     this.setupScene();
 
-    this.navmesh = assetManager.navmesh;
     // const helper = createConvexRegionHelper(assetManager.navmesh);
     // this.scene.add(helper);
 
@@ -70,32 +68,21 @@ export class GameState {
     }
   }
 
-  checkProjectileIntersection() {
-    /**
-     * Should accept a projectile game entity as an argument
-     * Projectile has a reference to its owner (player)
-     *
-     * It looks like the BVH would require the level object to be a single geometry,
-     * right now it it made up of multiple objects. I could do it when the level is
-     * finalised though.
-     *
-     * Dive uses custom hardcoded bounding boxes for the enemies, which I don't want
-     * to work out myself for the zombies just now.
-     *
-     * Even though the AABBs and BVH would be quicker to test against, I will just
-     * use three raycaster against render components for now. The zombies have no
-     * children so I wouldn't need it to traverse many objects.
-     *
-     * What this needs to do:
-     * - Accept a projectile yuka entity
-     * - Create a three raycaster set from camera
-     * - Raycast against render comps of level and zombies
-     * - If static object hit, place decal
-     * - If enemy hit, get its reference and do more stuff
-     * - Update the player's gun that has now fired
-     *
-     * -
-     */
+  /**
+   * Returns the intersection point from raycasting into the scene from camera's current pov
+   */
+  getCameraIntersection(): THREE.Intersection | undefined {
+    this.raycaster.setFromCamera({ x: 0, y: 0 }, this.camera);
+    const intersections = this.raycaster.intersectObjects(
+      this.scene.children,
+      true
+    );
+
+    if (!intersections.length) {
+      return undefined;
+    }
+
+    return intersections[0];
   }
 
   private setupScene() {
@@ -145,7 +132,6 @@ export class GameState {
     const level = new Level();
     level.name = "level";
     this.addEntity(level, renderComponent);
-    console.log("level", renderComponent);
 
     // spatial index
 

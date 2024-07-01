@@ -5,9 +5,12 @@ import { sync } from "./game-state";
 import { Weapon } from "../weapons/weapon";
 import { Pistol } from "../weapons/pistol";
 
+/**
+ * Responsible for equipping and swapping weapons, setting up render components.
+ */
 export class WeaponSystem {
   // can only hold two weapons at once
-  private currentWeapon?: Weapon;
+  currentWeapon?: Weapon;
   private secondWeapon?: Weapon;
 
   private pistolRenderComponent: THREE.Object3D;
@@ -26,15 +29,6 @@ export class WeaponSystem {
 
     // will need to work out equipping into given weapon slots later
     this.currentWeapon = pistol;
-  }
-
-  canShoot() {
-    return this.currentWeapon?.canShoot() ?? false;
-  }
-
-  shoot() {
-    // Shoot the equipped gun
-    this.currentWeapon?.shoot();
   }
 
   private setupPistolRenderComponent() {

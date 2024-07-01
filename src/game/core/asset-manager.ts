@@ -89,6 +89,17 @@ export class AssetManager {
     weaponTexture.matrixAutoUpdate = false;
     weaponTexture.encoding = THREE.sRGBEncoding;
     this.textures.set("weapon-atlas", weaponTexture);
+
+    // battle royale texture atlas
+
+    const brUrl = new URL(
+      "/textures/PolygonBattleRoyale_Texture_01_A.png",
+      import.meta.url
+    ).href;
+    const brTexture = textureLoader.load(brUrl);
+    brTexture.matrixAutoUpdate = false;
+    brTexture.encoding = THREE.sRGBEncoding;
+    this.textures.set("battle-royale-atlas", brTexture);
   }
 
   private loadModels(gltfLoader: GLTFLoader, fbxLoader: FBXLoader) {
@@ -118,6 +129,31 @@ export class AssetManager {
     fbxLoader.load(pistolUrl, (group) => {
       this.models.set("pistol", group);
     });
+
+    // bullet
+
+    const bulletUrl = new URL(
+      "/models/SM_Wep_Pistol_Bullet_01.fbx",
+      import.meta.url
+    ).href;
+    fbxLoader.load(bulletUrl, (group) => {
+      this.models.set("bullet", group);
+    });
+
+    // bullet line
+
+    const bulletLineGeom = new THREE.BufferGeometry();
+    const bulletLineMat = new THREE.LineBasicMaterial({ color: 0xfbf8e6 });
+
+    bulletLineGeom.setFromPoints([
+      new THREE.Vector3(),
+      new THREE.Vector3(0, 0, -1),
+    ]);
+
+    const bulletLine = new THREE.LineSegments(bulletLineGeom, bulletLineMat);
+    bulletLine.matrixAutoUpdate = false;
+
+    this.models.set("bullet-line", bulletLine);
   }
 
   private prepModel(model: THREE.Object3D) {
