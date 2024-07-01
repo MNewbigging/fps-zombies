@@ -94,7 +94,7 @@ export class Player extends YUKA.MovingEntity {
     this.weaponSystem.currentWeapon?.shoot(targetPosition);
   }
 
-  addBullet(ray: YUKA.Ray) {
+  addBullet(ray: YUKA.Ray, targetPosition: YUKA.Vector3) {
     const assetManager = this.gameState.assetManager;
 
     const bulletLine = assetManager.models.get("bullet").clone();
@@ -102,7 +102,7 @@ export class Player extends YUKA.MovingEntity {
     //bulletLine.visible = false;
 
     const bullet = new Projectile(this, ray);
-    bullet.scale.set(0.1, 0.1, 0.1);
+    bullet.lookAt(targetPosition);
 
     this.gameState.addEntity(bullet, bulletLine);
 

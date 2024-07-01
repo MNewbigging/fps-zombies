@@ -13,7 +13,7 @@ import { Player } from "../entities/player";
  */
 
 export class Projectile extends YUKA.MovingEntity {
-  private lifetime = 100;
+  private lifetime = 2;
   private currentLifetime = 0;
 
   constructor(public player: Player, public ray: YUKA.Ray) {
@@ -22,12 +22,13 @@ export class Projectile extends YUKA.MovingEntity {
     this.canActivateTrigger = false;
     this.updateOrientation = false;
 
+    this.scale.set(0.1, 0.1, 0.1);
+
     // Velocity never changes - work it out once
-    this.maxSpeed = 1;
+    this.maxSpeed = 180;
 
     this.position.copy(ray.origin);
     this.velocity.copy(ray.direction).multiplyScalar(this.maxSpeed);
-    this.rotation.fromEuler(0, Math.PI, 0);
   }
 
   override update(delta: number): this {

@@ -62,13 +62,13 @@ export class Weapon extends YUKA.GameEntity {
     const ray = new YUKA.Ray();
 
     this.getWorldPosition(ray.origin);
-    ray.direction.subVectors(targetPosition, ray.origin);
+    ray.direction.subVectors(targetPosition, ray.origin).normalize();
 
     // bullet spread
 
     // add bullet to world
 
-    this.player.addBullet(ray);
+    this.player.addBullet(ray, targetPosition);
 
     // adjust ammo
   }
