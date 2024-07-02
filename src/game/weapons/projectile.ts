@@ -3,7 +3,7 @@ import { Player } from "../entities/player";
 import { eventListener } from "../../listeners/event-listener";
 
 export class Projectile extends YUKA.MovingEntity {
-  private lifetime = 5;
+  private lifetime = 1;
   private currentLifetime = 0;
 
   constructor(
@@ -17,7 +17,7 @@ export class Projectile extends YUKA.MovingEntity {
     this.updateOrientation = false;
 
     // Velocity never changes - work it out once
-    this.maxSpeed = 30;
+    this.maxSpeed = 40;
 
     this.position.copy(ray.origin);
     this.velocity.copy(ray.direction).multiplyScalar(this.maxSpeed);

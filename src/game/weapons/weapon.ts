@@ -1,5 +1,7 @@
 import * as YUKA from "yuka";
+import * as THREE from "three";
 import { Player } from "../entities/player";
+import { Projectile } from "./projectile";
 
 export class Weapon extends YUKA.GameEntity {
   magAmmo = 0;
@@ -67,9 +69,34 @@ export class Weapon extends YUKA.GameEntity {
 
     // add bullet to world
 
-    this.player.addBullet(ray, targetPosition);
+    this.addBullet(ray, targetPosition);
 
     // adjust ammo
+  }
+
+  addBullet(ray: YUKA.Ray, targetPosition: YUKA.Vector3) {
+    const assetManager = this.player.gameState.assetManager;
+
+    // Create bullet trail object
+    const bulletTrail = assetManager.models.get("bullet-trail").clone();
+    bulletTrail.material.map = assetManager.textures.get("bullet-trail");
+
+    // Flip it flat
+    bulletTrail.rotateX(Math.PI / 2);
+    (bulletTrail as THREE.Object3D).scale.set(0.1, 2, 0.1);
+
+    // Parent it so it remains flat when facing forward
+    const renderComponent = new THREE.Group();
+    renderComponent.add(bulletTrail);
+
+    // Create the bullet entity
+    const bullet = new Projectile(this.player, ray, targetPosition);
+
+    // Face the target position
+    bullet.lookAt(targetPosition);
+
+    // Add it
+    this.player.gameState.addEntity(bullet, renderComponent);
   }
 
   lower() {}

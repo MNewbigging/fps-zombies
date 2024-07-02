@@ -1,7 +1,7 @@
 import * as YUKA from "yuka";
 import * as THREE from "three";
 import { FpsControls } from "../controls/fps-controls";
-import { GameState, sync } from "../core/game-state";
+import { GameState } from "../core/game-state";
 import { WeaponSystem } from "../core/weapon-system";
 import { Projectile } from "../weapons/projectile";
 
@@ -104,31 +104,6 @@ export class Player extends YUKA.MovingEntity {
 
     // Shoot the equipped gun
     this.weaponSystem.currentWeapon?.shoot(this.ray, targetPosition);
-  }
-
-  addBullet(ray: YUKA.Ray, targetPosition: YUKA.Vector3) {
-    const assetManager = this.gameState.assetManager;
-
-    // Create bullet trail object
-    const bulletTrail = assetManager.models.get("bullet-trail").clone();
-    bulletTrail.material.map = assetManager.textures.get("bullet-trail");
-
-    // Flip it flat
-    bulletTrail.rotateX(Math.PI / 2);
-    (bulletTrail as THREE.Object3D).scale.set(0.5, 2, 0.5);
-
-    // Parent it so it remains flat when facing forward
-    const renderComponent = new THREE.Group();
-    renderComponent.add(bulletTrail);
-
-    // Create the bullet entity
-    const bullet = new Projectile(this, ray, targetPosition);
-
-    // Face the target position
-    bullet.lookAt(targetPosition);
-
-    // Add it
-    this.gameState.addEntity(bullet, renderComponent);
   }
 
   private stayInLevel() {
