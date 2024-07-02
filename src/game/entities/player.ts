@@ -100,7 +100,7 @@ export class Player extends YUKA.MovingEntity {
     }
 
     // Debug the shot
-    this.gameState.debugShot(this.ray, targetPosition);
+    //this.gameState.debugShot(this.ray, targetPosition);
 
     // Shoot the equipped gun
     this.weaponSystem.currentWeapon?.shoot(this.ray, targetPosition);
@@ -115,6 +115,7 @@ export class Player extends YUKA.MovingEntity {
 
     // Flip it flat
     bulletTrail.rotateX(Math.PI / 2);
+    (bulletTrail as THREE.Object3D).scale.set(0.5, 2, 0.5);
 
     // Parent it so it remains flat when facing forward
     const renderComponent = new THREE.Group();
@@ -122,36 +123,12 @@ export class Player extends YUKA.MovingEntity {
 
     // Create the bullet entity
     const bullet = new Projectile(this, ray, targetPosition);
-    const rot = bullet.rotation;
 
-    const helper = renderComponent as THREE.Object3D;
-
-    // Start at the ray's origin
-    helper.position.set(
-      bullet.position.x,
-      bullet.position.y,
-      bullet.position.z
-    );
-
-    // // Face end
+    // Face the target position
     bullet.lookAt(targetPosition);
-    helper.setRotationFromQuaternion(
-      new THREE.Quaternion(rot.x, rot.y, rot.z, rot.w)
-    );
 
-    // // Find right
-    // const right = new YUKA.Vector3(1, 0, 0);
-    // right.applyRotation(bullet.rotation);
-
-    // // Rotate around that axis
-    // helper.rotateOnAxis(
-    //   new THREE.Vector3(right.x, right.y, right.z),
-    //   Math.PI / 2
-    // );
-
-    // Just draw it
-    this.gameState.scene.add(renderComponent);
-    //this.gameState.addEntity(bullet, renderComponent);
+    // Add it
+    this.gameState.addEntity(bullet, renderComponent);
   }
 
   private stayInLevel() {

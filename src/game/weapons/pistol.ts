@@ -12,7 +12,7 @@ export class Pistol extends Weapon {
     this.magLimit = 12;
     this.reserveAmmo = 12;
     this.reserveLimit = 120;
-    this.setRpm(60);
+    this.setRpm(300);
 
     // synty model is overlarge
 

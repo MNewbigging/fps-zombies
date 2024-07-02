@@ -2,17 +2,6 @@ import * as YUKA from "yuka";
 import { Player } from "../entities/player";
 import { eventListener } from "../../listeners/event-listener";
 
-/**
- * This has a line render component to represent the bullet trail
- * This entity just moves from a to b in a straight line, where
- * a and b is the start and end of the ray generated from shooting.
- *
- * When it reaches b, it will be destroyed and fire an event.
- *
- *
- * May wish to extend this to separate Bullet / Arcing Projectile types later.
- */
-
 export class Projectile extends YUKA.MovingEntity {
   private lifetime = 5;
   private currentLifetime = 0;
@@ -28,7 +17,7 @@ export class Projectile extends YUKA.MovingEntity {
     this.updateOrientation = false;
 
     // Velocity never changes - work it out once
-    this.maxSpeed = 2;
+    this.maxSpeed = 30;
 
     this.position.copy(ray.origin);
     this.velocity.copy(ray.direction).multiplyScalar(this.maxSpeed);
