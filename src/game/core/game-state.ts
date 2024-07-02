@@ -22,6 +22,7 @@ export class GameState {
 
   private player: Player;
   private pathPlanner: PathPlanner;
+  private intersectionObjects: THREE.Object3D[] = [];
 
   constructor(public assetManager: AssetManager) {
     makeAutoObservable(this);
@@ -74,8 +75,9 @@ export class GameState {
    */
   getCameraIntersection(): THREE.Intersection | undefined {
     this.raycaster.setFromCamera({ x: 0, y: 0 }, this.camera);
+
     const intersections = this.raycaster.intersectObjects(
-      this.scene.children,
+      this.intersectionObjects,
       true
     );
 
@@ -147,6 +149,7 @@ export class GameState {
     const level = new Level();
     level.name = "level";
     this.addEntity(level, renderComponent);
+    this.intersectionObjects.push(renderComponent);
 
     // spatial index
 
@@ -204,6 +207,7 @@ export class GameState {
         child.material.vertexColors = false;
       }
     });
+    this.intersectionObjects.push(renderComponent);
 
     const zombie = new Zombie(
       this.pathPlanner,

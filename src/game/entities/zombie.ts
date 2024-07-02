@@ -4,6 +4,7 @@ import { PathPlanner } from "../core/path-planner";
 import { Player } from "./player";
 import { SeekPlayerEvaluator } from "../evaluators/seek-player-evaluator";
 import { AttackPlayerEvaluator } from "../evaluators/attack-player-evaluator";
+import { RenderCallback } from "yuka/src/core/GameEntity";
 
 export const POSITION_EQUALITY_TOLERANCE = 1.4;
 
