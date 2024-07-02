@@ -136,6 +136,7 @@ export class AssetManager {
     const pistolUrl = new URL("/models/pistol.fbx", import.meta.url).href;
     fbxLoader.load(pistolUrl, (group) => {
       this.models.set("pistol", group);
+      console.log("pistol", group);
     });
 
     // bullet

@@ -7,6 +7,8 @@ export class Weapon extends YUKA.GameEntity {
   reserveAmmo = 0;
   reserveLimit = 0;
 
+  muzzle: YUKA.GameEntity;
+
   private msBetweenShots = 1000; // 60 rpm default
   private lastShotTime = performance.now();
   private spread = new YUKA.Vector3();
@@ -15,6 +17,9 @@ export class Weapon extends YUKA.GameEntity {
     super();
 
     this.canActivateTrigger = false;
+
+    this.muzzle = new YUKA.GameEntity();
+    this.add(this.muzzle);
   }
 
   setRpm(rpm: number) {

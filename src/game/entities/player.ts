@@ -74,6 +74,10 @@ export class Player extends YUKA.MovingEntity {
       return;
     }
 
+    // The ray starts at the muzzle
+    equippedWeapon.muzzle.getWorldPosition(ray.origin);
+    head.getWorldDirection(ray.direction);
+
     // I need a target position for the projectile, raycast into scene to find it
     const intersection = this.gameState.getCameraIntersection();
 
@@ -83,15 +87,21 @@ export class Player extends YUKA.MovingEntity {
         intersection.point.y,
         intersection.point.z
       );
+
+      ray.direction = targetPosition.clone().sub(ray.origin).normalize();
     } else {
-      // If there is no intersection, work out direction from self
-      head.getWorldPosition(ray.origin);
+      // Get direction from where we're looking
       head.getWorldDirection(ray.direction);
+
+      // Scale it by a flat amount
       targetPosition.copy(ray.origin).add(ray.direction.multiplyScalar(1000));
     }
 
+    // Debug the shot
+    this.gameState.debugShot(this.ray, targetPosition);
+
     // Shoot the equipped gun
-    this.weaponSystem.currentWeapon?.shoot(targetPosition);
+    //this.weaponSystem.currentWeapon?.shoot(targetPosition);
   }
 
   addBullet(ray: YUKA.Ray, targetPosition: YUKA.Vector3) {

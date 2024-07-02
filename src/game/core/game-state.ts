@@ -86,6 +86,20 @@ export class GameState {
     return intersections[0];
   }
 
+  debugShot(shotRay: YUKA.Ray, targetPosition: YUKA.Vector3) {
+    // Create a debug line to visualise the shot
+    const lineMat = new THREE.LineBasicMaterial({ color: 0xff0000 });
+
+    const points: THREE.Vector3[] = [
+      new THREE.Vector3(shotRay.origin.x, shotRay.origin.y, shotRay.origin.z),
+      new THREE.Vector3(targetPosition.x, targetPosition.y, targetPosition.z),
+    ];
+
+    const geometry = new THREE.BufferGeometry().setFromPoints(points);
+    const line = new THREE.Line(geometry, lineMat);
+    this.scene.add(line);
+  }
+
   private setupScene() {
     // skybox
 
@@ -223,11 +237,6 @@ export class GameState {
     this.renderer.clear();
 
     this.renderer.render(this.scene, this.camera);
-  };
-
-  private onProjectileHit = (projectile: Projectile) => {
-    // Place decal - but only on static targets...
-    // Don't want bullet objects after all, need a line...
   };
 
   private syncCamera = (
