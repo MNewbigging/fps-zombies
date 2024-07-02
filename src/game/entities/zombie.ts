@@ -26,6 +26,7 @@ export class Zombie extends YUKA.Vehicle {
   private moveDirection = new YUKA.Vector3();
 
   constructor(
+    public renderComponent: THREE.Object3D,
     public pathPlanner: PathPlanner,
     public player: Player,
     public navmesh: YUKA.NavMesh

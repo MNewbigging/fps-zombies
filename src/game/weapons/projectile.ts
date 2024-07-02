@@ -17,10 +17,17 @@ export class Projectile extends YUKA.MovingEntity {
     this.updateOrientation = false;
 
     // Velocity never changes - work it out once
-    this.maxSpeed = 40;
+    this.maxSpeed = 50;
 
     this.position.copy(ray.origin);
     this.velocity.copy(ray.direction).multiplyScalar(this.maxSpeed);
+
+    // Lifetime
+    const relativeLifetime =
+      new YUKA.Vector3().copy(ray.origin).distanceTo(targetPosition) /
+      this.maxSpeed;
+
+    this.lifetime = Math.min(relativeLifetime, 2);
   }
 
   override update(delta: number): this {

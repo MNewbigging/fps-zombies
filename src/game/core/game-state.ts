@@ -8,6 +8,11 @@ import { Zombie } from "../entities/zombie";
 import { PathPlanner } from "./path-planner";
 import { getLargestAbsoluteEntries } from "../utils/utils";
 
+export interface IntersectionData {
+  sceneIntersection?: THREE.Intersection;
+  entity?: YUKA.GameEntity;
+}
+
 export class GameState {
   @observable paused = false;
 
@@ -19,6 +24,7 @@ export class GameState {
   private time = new YUKA.Time();
   private entityManager = new YUKA.EntityManager();
 
+  private level: Level;
   private player: Player;
   private pathPlanner: PathPlanner;
   private intersectionObjects: THREE.Object3D[] = [];
@@ -33,7 +39,7 @@ export class GameState {
 
     this.pathPlanner = new PathPlanner(assetManager.navmesh);
 
-    this.setupLevel();
+    this.level = this.setupLevel();
     this.player = this.setupPlayer();
     this.setupZombie(new YUKA.Vector3(2, 0, -1));
     this.setupZombie(new YUKA.Vector3(2, 0, -5));
@@ -72,8 +78,13 @@ export class GameState {
   /**
    * Returns the intersection point from raycasting into the scene from camera's current pov
    */
-  getCameraIntersection(): THREE.Intersection | undefined {
+  getIntersection(): IntersectionData {
+    const data: IntersectionData = {};
+
     this.raycaster.setFromCamera({ x: 0, y: 0 }, this.camera);
+
+    // Test for intersections
+    const testEntities = [this];
 
     const intersections = this.raycaster.intersectObjects(
       this.intersectionObjects,
@@ -81,10 +92,12 @@ export class GameState {
     );
 
     if (!intersections.length) {
-      return undefined;
+      return data;
     }
 
-    return intersections[0];
+    data.sceneIntersection = intersections[0];
+
+    return data;
   }
 
   debugShot(shotRay: YUKA.Ray, targetPosition: YUKA.Vector3) {
@@ -145,7 +158,7 @@ export class GameState {
     const renderComponent = this.assetManager.models.get(
       "level"
     ) as THREE.Object3D;
-    const level = new Level();
+    const level = new Level(renderComponent);
     level.name = "level";
     this.addEntity(level, renderComponent);
     this.intersectionObjects.push(renderComponent);
@@ -182,6 +195,8 @@ export class GameState {
     //   this.assetManager.navmesh.spatialIndex
     // );
     // this.scene.add(helper);
+
+    return level;
   }
 
   private setupPlayer() {
@@ -209,6 +224,7 @@ export class GameState {
     this.intersectionObjects.push(renderComponent);
 
     const zombie = new Zombie(
+      renderComponent,
       this.pathPlanner,
       this.player,
       this.assetManager.navmesh

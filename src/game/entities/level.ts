@@ -1,7 +1,8 @@
 import * as YUKA from "yuka";
+import * as THREE from "three";
 
 export class Level extends YUKA.GameEntity {
-  constructor() {
+  constructor(public renderComponent: THREE.Object3D) {
     super();
 
     this.canActivateTrigger = false;

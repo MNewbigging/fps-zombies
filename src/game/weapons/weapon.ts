@@ -83,7 +83,7 @@ export class Weapon extends YUKA.GameEntity {
 
     // Flip it flat
     bulletTrail.rotateX(Math.PI / 2);
-    (bulletTrail as THREE.Object3D).scale.set(0.1, 2, 0.1);
+    (bulletTrail as THREE.Object3D).scale.set(0.2, 2, 0.2);
 
     // Parent it so it remains flat when facing forward
     const renderComponent = new THREE.Group();

@@ -80,14 +80,14 @@ export class Player extends YUKA.MovingEntity {
 
     // Guns are completely accurate for now, do bullet spread here later
 
-    // I need a target position for the projectile, raycast into scene to find it
-    const intersection = this.gameState.getCameraIntersection();
+    // Get any scene & entity intersection
+    const intersection = this.gameState.getIntersection();
 
-    if (intersection) {
+    if (intersection.sceneIntersection) {
       targetPosition.set(
-        intersection.point.x,
-        intersection.point.y,
-        intersection.point.z
+        intersection.sceneIntersection.point.x,
+        intersection.sceneIntersection.point.y,
+        intersection.sceneIntersection.point.z
       );
 
       ray.direction = targetPosition.clone().sub(ray.origin).normalize();
