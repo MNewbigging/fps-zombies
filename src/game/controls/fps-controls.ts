@@ -9,20 +9,18 @@ interface Input {
   mouseDown: boolean;
 }
 
-const INPUT_DEFAULT: Input = {
-  forward: false,
-  backward: false,
-  left: false,
-  right: false,
-  mouseDown: false,
-};
-
 const PI05 = Math.PI / 2;
 
 export class FpsControls {
   private enabled = false;
 
-  private input: Input = INPUT_DEFAULT;
+  private input: Input = {
+    forward: false,
+    backward: false,
+    left: false,
+    right: false,
+    mouseDown: false,
+  };
 
   private elapsed = 0;
   private direction = new YUKA.Vector3();
@@ -62,7 +60,13 @@ export class FpsControls {
     document.removeEventListener("mousedown", this.onMouseDown, false);
     document.removeEventListener("mouseup", this.onMouseUp, false);
 
-    this.input = INPUT_DEFAULT;
+    this.input = {
+      forward: false,
+      backward: false,
+      left: false,
+      right: false,
+      mouseDown: false,
+    };
 
     this.enabled = false;
   }

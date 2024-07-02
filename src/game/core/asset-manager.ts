@@ -181,7 +181,6 @@ export class AssetManager {
         side: THREE.DoubleSide,
       })
     );
-    bulletTrail.rotateZ(Math.PI);
     this.models.set("bullet-trail", bulletTrail);
   }
 

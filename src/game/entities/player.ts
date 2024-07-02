@@ -109,14 +109,49 @@ export class Player extends YUKA.MovingEntity {
   addBullet(ray: YUKA.Ray, targetPosition: YUKA.Vector3) {
     const assetManager = this.gameState.assetManager;
 
-    const renderComponent = assetManager.models.get("bullet-trail").clone();
-    renderComponent.material.map = assetManager.textures.get("bullet-trail");
+    // Create bullet trail object
+    const bulletTrail = assetManager.models.get("bullet-trail").clone();
+    bulletTrail.material.map = assetManager.textures.get("bullet-trail");
 
+    // Flip it flat
+    bulletTrail.rotateX(Math.PI / 2);
+
+    // Parent it so it remains flat when facing forward
+    const renderComponent = new THREE.Group();
+    renderComponent.add(bulletTrail);
+
+    // Create the bullet entity
     const bullet = new Projectile(this, ray, targetPosition);
-    //bullet.lookAt(targetPosition);
-    bullet.rotation.fromEuler(Math.PI, 0, 0);
+    const rot = bullet.rotation;
 
-    this.gameState.addEntity(bullet, renderComponent);
+    const helper = renderComponent as THREE.Object3D;
+
+    // Start at the ray's origin
+    helper.position.set(
+      bullet.position.x,
+      bullet.position.y,
+      bullet.position.z
+    );
+
+    // // Face end
+    bullet.lookAt(targetPosition);
+    helper.setRotationFromQuaternion(
+      new THREE.Quaternion(rot.x, rot.y, rot.z, rot.w)
+    );
+
+    // // Find right
+    // const right = new YUKA.Vector3(1, 0, 0);
+    // right.applyRotation(bullet.rotation);
+
+    // // Rotate around that axis
+    // helper.rotateOnAxis(
+    //   new THREE.Vector3(right.x, right.y, right.z),
+    //   Math.PI / 2
+    // );
+
+    // Just draw it
+    this.gameState.scene.add(renderComponent);
+    //this.gameState.addEntity(bullet, renderComponent);
   }
 
   private stayInLevel() {

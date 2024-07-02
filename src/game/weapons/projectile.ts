@@ -25,10 +25,10 @@ export class Projectile extends YUKA.MovingEntity {
     super();
 
     this.canActivateTrigger = false;
-    //this.updateOrientation = false;
+    this.updateOrientation = false;
 
     // Velocity never changes - work it out once
-    this.maxSpeed = 4;
+    this.maxSpeed = 2;
 
     this.position.copy(ray.origin);
     this.velocity.copy(ray.direction).multiplyScalar(this.maxSpeed);
