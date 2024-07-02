@@ -10,7 +10,7 @@ export class Weapon extends YUKA.GameEntity {
   muzzle: YUKA.GameEntity;
 
   private msBetweenShots = 1000; // 60 rpm default
-  private lastShotTime = performance.now();
+  private lastShotTime = 0;
   private spread = new YUKA.Vector3();
 
   constructor(public player: Player) {
@@ -51,7 +51,7 @@ export class Weapon extends YUKA.GameEntity {
     return canFire && hasAmmo;
   }
 
-  shoot(targetPosition: YUKA.Vector3) {
+  shoot(ray: YUKA.Ray, targetPosition: YUKA.Vector3) {
     if (!this.canShoot()) {
       console.log("wait");
       return;
@@ -64,19 +64,6 @@ export class Weapon extends YUKA.GameEntity {
     // animation
 
     // create bullet
-
-    const ray = new YUKA.Ray();
-
-    this.getWorldPosition(ray.origin);
-    ray.direction.subVectors(targetPosition, ray.origin).normalize();
-
-    // bullet spread
-
-    this.spread.x = (1 - Math.random() * 2) * 0.01;
-    this.spread.y = (1 - Math.random() * 2) * 0.01;
-    this.spread.z = (1 - Math.random() * 2) * 0.01;
-
-    ray.direction.add(this.spread).normalize();
 
     // add bullet to world
 

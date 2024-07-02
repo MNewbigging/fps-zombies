@@ -78,6 +78,8 @@ export class Player extends YUKA.MovingEntity {
     equippedWeapon.muzzle.getWorldPosition(ray.origin);
     head.getWorldDirection(ray.direction);
 
+    // Guns are completely accurate for now, do bullet spread here later
+
     // I need a target position for the projectile, raycast into scene to find it
     const intersection = this.gameState.getCameraIntersection();
 
@@ -101,17 +103,18 @@ export class Player extends YUKA.MovingEntity {
     this.gameState.debugShot(this.ray, targetPosition);
 
     // Shoot the equipped gun
-    //this.weaponSystem.currentWeapon?.shoot(targetPosition);
+    this.weaponSystem.currentWeapon?.shoot(this.ray, targetPosition);
   }
 
   addBullet(ray: YUKA.Ray, targetPosition: YUKA.Vector3) {
     const assetManager = this.gameState.assetManager;
 
-    const renderComponent = assetManager.models.get("bullet-line").clone();
-    // assetManager.applyModelTexture(renderComponent, "weapon-atlas");
+    const renderComponent = assetManager.models.get("bullet-trail").clone();
+    renderComponent.material.map = assetManager.textures.get("bullet-trail");
 
     const bullet = new Projectile(this, ray, targetPosition);
-    bullet.lookAt(targetPosition);
+    //bullet.lookAt(targetPosition);
+    bullet.rotation.fromEuler(Math.PI, 0, 0);
 
     this.gameState.addEntity(bullet, renderComponent);
   }

@@ -14,7 +14,7 @@ import { eventListener } from "../../listeners/event-listener";
  */
 
 export class Projectile extends YUKA.MovingEntity {
-  private lifetime = 2;
+  private lifetime = 5;
   private currentLifetime = 0;
 
   constructor(
@@ -25,9 +25,7 @@ export class Projectile extends YUKA.MovingEntity {
     super();
 
     this.canActivateTrigger = false;
-    this.updateOrientation = false;
-
-    this.scale.set(2, 2, 2);
+    //this.updateOrientation = false;
 
     // Velocity never changes - work it out once
     this.maxSpeed = 4;

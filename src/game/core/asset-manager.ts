@@ -108,6 +108,14 @@ export class AssetManager {
     const bulletHoleTexture = textureLoader.load(bulletHoleUrl);
     bulletHoleTexture.matrixAutoUpdate = false;
     this.textures.set("bullet-hole", bulletHoleTexture);
+
+    // bullet trail
+
+    const bulletTrailUrl = new URL("/textures/trace_06.png", import.meta.url)
+      .href;
+    const bulletTrailTexture = textureLoader.load(bulletTrailUrl);
+    bulletTrailTexture.matrixAutoUpdate = false;
+    this.textures.set("bullet-trail", bulletTrailTexture);
   }
 
   private loadModels(gltfLoader: GLTFLoader, fbxLoader: FBXLoader) {
@@ -136,7 +144,6 @@ export class AssetManager {
     const pistolUrl = new URL("/models/pistol.fbx", import.meta.url).href;
     fbxLoader.load(pistolUrl, (group) => {
       this.models.set("pistol", group);
-      console.log("pistol", group);
     });
 
     // bullet
@@ -163,6 +170,19 @@ export class AssetManager {
     bulletLine.matrixAutoUpdate = false;
 
     this.models.set("bullet-line", bulletLine);
+
+    // bullet trail
+
+    const bulletTrail = new THREE.Mesh(
+      new THREE.PlaneGeometry(),
+      new THREE.MeshBasicMaterial({
+        color: "yellow",
+        transparent: true,
+        side: THREE.DoubleSide,
+      })
+    );
+    bulletTrail.rotateZ(Math.PI);
+    this.models.set("bullet-trail", bulletTrail);
   }
 
   private prepModel(model: THREE.Object3D) {
