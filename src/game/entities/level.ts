@@ -1,7 +1,6 @@
 import * as YUKA from "yuka";
 import * as THREE from "three";
 import { DecalGeometry } from "three/examples/jsm/geometries/DecalGeometry";
-import { AssetManager } from "../core/asset-manager";
 import { GameState, IntersectionData } from "../core/game-state";
 
 export class Level extends YUKA.GameEntity {
@@ -21,8 +20,6 @@ export class Level extends YUKA.GameEntity {
   }
 
   override handleMessage(telegram: YUKA.Telegram): boolean {
-    console.log("Level received message:", telegram);
-
     switch (telegram.message) {
       case "hit":
         {

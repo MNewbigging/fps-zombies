@@ -107,7 +107,6 @@ export class Player extends YUKA.MovingEntity {
 
     // Inform entity that it was hit
     if (intersection.entity) {
-      console.log("sending message");
       this.sendMessage(intersection.entity, "hit", 0, intersection);
     }
   }

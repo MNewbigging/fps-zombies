@@ -4,7 +4,6 @@ import { PathPlanner } from "../core/path-planner";
 import { Player } from "./player";
 import { SeekPlayerEvaluator } from "../evaluators/seek-player-evaluator";
 import { AttackPlayerEvaluator } from "../evaluators/attack-player-evaluator";
-import { RenderCallback } from "yuka/src/core/GameEntity";
 
 export const POSITION_EQUALITY_TOLERANCE = 1.4;
 
@@ -97,8 +96,6 @@ export class Zombie extends YUKA.Vehicle {
   }
 
   override handleMessage(telegram: YUKA.Telegram): boolean {
-    console.log("Zombie received message: ", telegram);
-
     return true;
   }
 
