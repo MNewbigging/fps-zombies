@@ -4,6 +4,7 @@ import { PathPlanner } from "../core/path-planner";
 import { Player } from "./player";
 import { SeekPlayerEvaluator } from "../evaluators/seek-player-evaluator";
 import { AttackPlayerEvaluator } from "../evaluators/attack-player-evaluator";
+import { TweenFactory } from "../core/tween-factory";
 
 export const POSITION_EQUALITY_TOLERANCE = 1.4;
 
@@ -23,6 +24,8 @@ export class Zombie extends YUKA.Vehicle {
 
   private lookPosition = new YUKA.Vector3();
   private moveDirection = new YUKA.Vector3();
+
+  private health = 100;
 
   constructor(
     public renderComponent: THREE.Object3D,
@@ -61,18 +64,6 @@ export class Zombie extends YUKA.Vehicle {
     this.currentRegion = navmesh.getClosestRegion(this.position);
   }
 
-  setAnimations(mixer: THREE.AnimationMixer, clips: THREE.AnimationClip[]) {
-    this.mixer = mixer;
-
-    clips.forEach((clip) => {
-      const action = mixer.clipAction(clip);
-      // action.play();
-      // action.enabled = false;
-
-      this.animations.set(clip.name, action);
-    });
-  }
-
   override start(): this {
     // default animation
 
@@ -96,7 +87,25 @@ export class Zombie extends YUKA.Vehicle {
   }
 
   override handleMessage(telegram: YUKA.Telegram): boolean {
+    switch (telegram.message) {
+      case "hit":
+        // Take damage
+        this.takeDamage(10);
+        break;
+    }
     return true;
+  }
+
+  setAnimations(mixer: THREE.AnimationMixer, clips: THREE.AnimationClip[]) {
+    this.mixer = mixer;
+
+    clips.forEach((clip) => {
+      const action = mixer.clipAction(clip);
+      // action.play();
+      // action.enabled = false;
+
+      this.animations.set(clip.name, action);
+    });
   }
 
   atPosition(position: YUKA.Vector3) {
@@ -162,5 +171,17 @@ export class Zombie extends YUKA.Vehicle {
     this.position.y -= distance * 0.2; // smooth transition
 
     return this;
+  }
+
+  private takeDamage(damage: number) {
+    // Reduce health
+    this.health -= damage;
+
+    // Flash red
+    const flashAnim = TweenFactory.zombieEmissiveFlash(
+      this.renderComponent as THREE.Mesh,
+      new THREE.Color("white")
+    );
+    flashAnim.start();
   }
 }

@@ -231,8 +231,10 @@ export class GameState {
     const texture = this.assetManager.textures.get("zombie-atlas");
     renderComponent.traverse((child) => {
       if (child instanceof THREE.Mesh) {
-        child.material.map = texture;
-        child.material.vertexColors = false;
+        child.material = new THREE.MeshLambertMaterial({
+          map: texture,
+          vertexColors: false,
+        });
       }
     });
 
