@@ -2,6 +2,7 @@ import * as YUKA from "yuka";
 import * as THREE from "three";
 import { Player } from "../entities/player";
 import { Projectile } from "./projectile";
+import { TweenFactory } from "../core/tween-factory";
 
 export class Weapon extends YUKA.GameEntity {
   magAmmo = 0;
@@ -11,7 +12,7 @@ export class Weapon extends YUKA.GameEntity {
 
   muzzle: YUKA.GameEntity;
 
-  private msBetweenShots = 1000; // 60 rpm default
+  msBetweenShots = 1000; // 60 rpm default
   private lastShotTime = 0;
   private spread = new YUKA.Vector3();
 
@@ -65,6 +66,11 @@ export class Weapon extends YUKA.GameEntity {
 
     // animation
 
+    const recoilAnim = TweenFactory.recoilWeapon(this, () => {
+      console.log("done");
+    });
+    recoilAnim.start();
+
     // create bullet
 
     // add bullet to world
@@ -83,7 +89,7 @@ export class Weapon extends YUKA.GameEntity {
 
     // Flip it flat
     bulletTrail.rotateX(Math.PI / 2);
-    (bulletTrail as THREE.Object3D).scale.set(0.2, 2, 0.2);
+    (bulletTrail as THREE.Object3D).scale.set(0.2, 5, 0.2);
 
     // Parent it so it remains flat when facing forward
     const renderComponent = new THREE.Group();

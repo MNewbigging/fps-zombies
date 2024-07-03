@@ -1,6 +1,7 @@
 import { action, makeAutoObservable, observable } from "mobx";
 import * as THREE from "three";
 import * as YUKA from "yuka";
+import * as TWEEN from "@tweenjs/tween.js";
 import { AssetManager } from "./asset-manager";
 import { Level } from "../entities/level";
 import { Player } from "../entities/player";
@@ -251,6 +252,8 @@ export class GameState {
       this.entityManager.update(dt);
 
       this.pathPlanner.update();
+
+      TWEEN.update();
     }
 
     this.renderer.clear();
