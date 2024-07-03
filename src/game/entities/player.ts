@@ -104,6 +104,12 @@ export class Player extends YUKA.MovingEntity {
 
     // Shoot the equipped gun
     this.weaponSystem.currentWeapon?.shoot(this.ray, targetPosition);
+
+    // Inform entity that it was hit
+    if (intersection.entity) {
+      console.log("sending message");
+      this.sendMessage(intersection.entity, "hit", 0, intersection);
+    }
   }
 
   private stayInLevel() {

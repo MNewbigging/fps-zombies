@@ -6,6 +6,7 @@ export class TweenFactory {
   static recoilWeapon(weapon: Weapon, onComplete: () => void) {
     const startPos = weapon.position.clone();
 
+    // move this into weapon later
     const recoilPosMod = new YUKA.Vector3(0, 0.02, 0.1);
 
     const targetPos = startPos.clone().add(recoilPosMod);

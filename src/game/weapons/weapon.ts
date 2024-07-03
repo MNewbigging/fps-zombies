@@ -67,13 +67,11 @@ export class Weapon extends YUKA.GameEntity {
     // animation
 
     const recoilAnim = TweenFactory.recoilWeapon(this, () => {
-      console.log("done");
+      //
     });
     recoilAnim.start();
 
     // create bullet
-
-    // add bullet to world
 
     this.addBullet(ray, targetPosition);
 

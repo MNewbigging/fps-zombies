@@ -28,7 +28,7 @@ export class GameState {
   private level: Level;
   private player: Player;
   private pathPlanner: PathPlanner;
-  private intersectionObjects: THREE.Object3D[] = [];
+  private zombies: Zombie[] = [];
 
   constructor(public assetManager: AssetManager) {
     makeAutoObservable(this);
@@ -42,8 +42,9 @@ export class GameState {
 
     this.level = this.setupLevel();
     this.player = this.setupPlayer();
-    this.setupZombie(new YUKA.Vector3(2, 0, -1));
-    this.setupZombie(new YUKA.Vector3(2, 0, -5));
+    const zombie1 = this.setupZombie(new YUKA.Vector3(2, 0, -1));
+    const zombie2 = this.setupZombie(new YUKA.Vector3(2, 0, -5));
+    this.zombies.push(zombie1, zombie2);
   }
 
   start() {
@@ -84,19 +85,32 @@ export class GameState {
 
     this.raycaster.setFromCamera({ x: 0, y: 0 }, this.camera);
 
-    // Test for intersections
-    const testEntities = [this];
+    // Test against zombies first
+    for (const zombie of this.zombies) {
+      const zombieIntersections = this.raycaster.intersectObject(
+        zombie.renderComponent,
+        true
+      );
+      if (zombieIntersections.length) {
+        data.sceneIntersection = zombieIntersections[0];
+        data.entity = zombie;
 
-    const intersections = this.raycaster.intersectObjects(
-      this.intersectionObjects,
-      true
-    );
-
-    if (!intersections.length) {
-      return data;
+        return data;
+      }
     }
 
-    data.sceneIntersection = intersections[0];
+    // Test for intersections against level
+    const levelIntersections = this.raycaster.intersectObject(
+      this.level.renderComponent,
+      true
+    );
+    if (levelIntersections.length) {
+      // Hit the level
+      data.sceneIntersection = levelIntersections[0];
+      data.entity = this.level;
+
+      return data;
+    }
 
     return data;
   }
@@ -159,10 +173,9 @@ export class GameState {
     const renderComponent = this.assetManager.models.get(
       "level"
     ) as THREE.Object3D;
-    const level = new Level(renderComponent);
+    const level = new Level(renderComponent, this);
     level.name = "level";
     this.addEntity(level, renderComponent);
-    this.intersectionObjects.push(renderComponent);
 
     // spatial index
 
@@ -222,7 +235,6 @@ export class GameState {
         child.material.vertexColors = false;
       }
     });
-    this.intersectionObjects.push(renderComponent);
 
     const zombie = new Zombie(
       renderComponent,
@@ -240,6 +252,8 @@ export class GameState {
     const attackClip = this.assetManager.animations.get("zombie-attack");
     const clips = [idleClip, walkClip, attackClip];
     zombie.setAnimations(mixer, clips);
+
+    return zombie;
   }
 
   private update = () => {

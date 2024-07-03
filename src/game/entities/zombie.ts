@@ -96,6 +96,12 @@ export class Zombie extends YUKA.Vehicle {
     return this;
   }
 
+  override handleMessage(telegram: YUKA.Telegram): boolean {
+    console.log("Zombie received message: ", telegram);
+
+    return true;
+  }
+
   atPosition(position: YUKA.Vector3) {
     const tolerance = POSITION_EQUALITY_TOLERANCE * POSITION_EQUALITY_TOLERANCE;
 
