@@ -178,7 +178,7 @@ export class AssetManager {
     const bulletTrail = new THREE.Mesh(
       new THREE.PlaneGeometry(),
       new THREE.MeshBasicMaterial({
-        color: "yellow",
+        color: "#faf687",
         transparent: true,
         side: THREE.DoubleSide,
       })

@@ -54,11 +54,7 @@ export class SeekPlayerGoal extends YUKA.Goal<Zombie> {
 
   override terminate(): void {
     // Remove the old path
-    this.owner.followPathBehaviour.active = false;
-    this.owner.followPathBehaviour.path.clear();
-    this.owner.path = undefined;
-
-    this.owner.onPathBehaviour.active = false;
+    this.owner.stopFollowingPath();
 
     // Clear velocity
     this.owner.velocity.set(0, 0, 0);
@@ -71,17 +67,7 @@ export class SeekPlayerGoal extends YUKA.Goal<Zombie> {
     }
 
     // Set the new path and start walking
-    owner.path = path;
-
-    const followPathBehaviour = owner.followPathBehaviour;
-    followPathBehaviour.path.clear();
-
-    path.forEach((waypoint) => {
-      followPathBehaviour.path.add(waypoint);
-    });
-
-    followPathBehaviour.active = true;
-    owner.onPathBehaviour.active = true;
+    owner.followPath(path);
 
     this.lastWaypoint = path[path.length - 1];
   };

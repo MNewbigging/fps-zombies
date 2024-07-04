@@ -35,9 +35,6 @@ export class GameState {
 
     this.setupScene();
 
-    // const helper = createConvexRegionHelper(assetManager.navmesh);
-    // this.scene.add(helper);
-
     this.pathPlanner = new PathPlanner(assetManager.navmesh);
 
     this.level = this.setupLevel();
@@ -93,9 +90,6 @@ export class GameState {
     }
   }
 
-  /**
-   * Returns the intersection point from raycasting into the scene from camera's current pov
-   */
   getIntersection(): IntersectionData {
     const data: IntersectionData = {};
 
@@ -128,6 +122,7 @@ export class GameState {
       return data;
     }
 
+    // Nothing was hit, return empty data object
     return data;
   }
 
@@ -224,6 +219,9 @@ export class GameState {
     // const helper = createCellSpaceHelper(
     //   this.assetManager.navmesh.spatialIndex
     // );
+    // this.scene.add(helper);
+
+    // const helper = createConvexRegionHelper(this.assetManager.navmesh);
     // this.scene.add(helper);
 
     return level;

@@ -1,7 +1,5 @@
 import * as YUKA from "yuka";
 import * as THREE from "three";
-import { PathPlanner } from "../core/path-planner";
-import { Player } from "./player";
 import { SeekPlayerEvaluator } from "../evaluators/seek-player-evaluator";
 import { AttackPlayerEvaluator } from "../evaluators/attack-player-evaluator";
 import { TweenFactory } from "../core/tween-factory";
@@ -14,15 +12,15 @@ export type AnimListenerCallback = () => void;
 export const POSITION_EQUALITY_TOLERANCE = 1.4;
 
 export class Zombie extends YUKA.Vehicle {
-  path?: Array<YUKA.Vector3>;
-  followPathBehaviour: YUKA.FollowPathBehavior;
-  onPathBehaviour: YUKA.OnPathBehavior;
   brain: YUKA.Think<Zombie>;
 
   private navmesh: YUKA.NavMesh;
   private currentRegion: YUKA.Polygon;
   private currentPosition: YUKA.Vector3;
   private previousPosition: YUKA.Vector3;
+
+  private followPathBehaviour: YUKA.FollowPathBehavior;
+  private onPathBehaviour: YUKA.OnPathBehavior;
 
   private mixer: THREE.AnimationMixer;
   private animations = new Map<string, THREE.AnimationAction>();
@@ -120,6 +118,26 @@ export class Zombie extends YUKA.Vehicle {
     return distance <= tolerance;
   }
 
+  isDead() {
+    return this.health <= 0;
+  }
+
+  followPath(path: YUKA.Vector3[]) {
+    // Remove any previous path
+    this.followPathBehaviour.path.clear();
+
+    // Assign the waypoints to a new path
+    path.forEach((waypoint) => this.followPathBehaviour.path.add(waypoint));
+
+    this.followPathBehaviour.active = true;
+    this.onPathBehaviour.active = true;
+  }
+
+  stopFollowingPath() {
+    this.followPathBehaviour.active = false;
+    this.onPathBehaviour.active = false;
+  }
+
   playAnimation(name: string, onComplete?: AnimListenerCallback) {
     const nextAction = this.animations.get(name);
     if (!nextAction) {
@@ -143,10 +161,6 @@ export class Zombie extends YUKA.Vehicle {
       : nextAction.play();
 
     this.currentAction = nextAction;
-  }
-
-  isDead() {
-    return this.health <= 0;
   }
 
   private setupAnimations(assetManager: AssetManager) {
