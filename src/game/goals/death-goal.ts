@@ -2,6 +2,7 @@ import * as YUKA from "yuka";
 import * as THREE from "three";
 import { Zombie } from "../entities/zombie";
 import { TweenFactory } from "../core/tween-factory";
+import { AnimationEndEvent, eventListener } from "../listeners/event-listener";
 
 export class DeathGoal extends YUKA.Goal<Zombie> {
   constructor(public owner: Zombie) {
@@ -9,10 +10,25 @@ export class DeathGoal extends YUKA.Goal<Zombie> {
   }
 
   override activate(): void {
-    this.owner.playAnimation("zombie-death", this.onDeathAnimComplete);
+    eventListener.on("entity-anim-end", this.onEntityAnimEnd);
+    this.owner.playAnimation("zombie-death");
   }
 
-  private onDeathAnimComplete = () => {
+  override terminate(): void {
+    eventListener.off("entity-anim-end", this.onEntityAnimEnd);
+  }
+
+  private onEntityAnimEnd = (animEndEvent: AnimationEndEvent) => {
+    // Do we care about this entity?
+    if (this.owner !== animEndEvent.entity) {
+      return;
+    }
+
+    // Must have been the death animation
+    if (animEndEvent.animName !== "zombie-death") {
+      return;
+    }
+
     // Can now start fade out anim
     const fadeOutAnim = TweenFactory.zombieFadeOut(
       this.owner.renderComponent as THREE.Mesh

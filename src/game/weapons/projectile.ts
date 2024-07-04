@@ -1,6 +1,6 @@
 import * as YUKA from "yuka";
 import { Player } from "../entities/player";
-import { eventListener } from "../../listeners/event-listener";
+import { eventListener } from "../listeners/event-listener";
 
 export class Projectile extends YUKA.MovingEntity {
   private lifetime = 1;

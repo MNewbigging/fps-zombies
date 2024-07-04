@@ -1,7 +1,15 @@
 import * as THREE from "three";
-import { Projectile } from "../game/weapons/projectile";
+import * as YUKA from "yuka";
+import { Projectile } from "../weapons/projectile";
+
+// Todo - find a better place for stuff like this
+export interface AnimationEndEvent {
+  entity: YUKA.GameEntity;
+  animName: string;
+}
 
 export interface EventMap {
+  "entity-anim-end": AnimationEndEvent;
   "projectile-hit": Projectile;
 }
 

@@ -6,8 +6,7 @@ import { TweenFactory } from "../core/tween-factory";
 import { DeathEvaluator } from "../evaluators/death-evaluator";
 import { AssetManager } from "../core/asset-manager";
 import { GameState } from "../core/game-state";
-
-export type AnimListenerCallback = () => void;
+import { eventListener } from "../listeners/event-listener";
 
 export const POSITION_EQUALITY_TOLERANCE = 1.4;
 
@@ -25,7 +24,6 @@ export class Zombie extends YUKA.Vehicle {
   private mixer: THREE.AnimationMixer;
   private animations = new Map<string, THREE.AnimationAction>();
   private currentAction?: THREE.AnimationAction;
-  private animListeners = new Map<string, AnimListenerCallback[]>();
 
   private lookPosition = new YUKA.Vector3();
   private moveDirection = new YUKA.Vector3();
@@ -138,7 +136,7 @@ export class Zombie extends YUKA.Vehicle {
     this.onPathBehaviour.active = false;
   }
 
-  playAnimation(name: string, onComplete?: AnimListenerCallback) {
+  playAnimation(name: string) {
     const nextAction = this.animations.get(name);
     if (!nextAction) {
       throw Error(`Could not find animation with name ${name}`);
@@ -146,12 +144,6 @@ export class Zombie extends YUKA.Vehicle {
 
     if (nextAction.getClip().name === this.currentAction?.getClip().name) {
       return;
-    }
-
-    if (onComplete) {
-      const existing = this.animListeners.get(name) ?? [];
-      existing.push(onComplete);
-      this.animListeners.set(name, existing);
     }
 
     nextAction.reset().setEffectiveTimeScale(1).setEffectiveWeight(1);
@@ -237,10 +229,9 @@ export class Zombie extends YUKA.Vehicle {
 
   private onAnimationEnd = (e: any) => {
     const action = e.action as THREE.AnimationAction;
-    this.notifyAnimationListeners(action.getClip().name);
+    eventListener.fire("entity-anim-end", {
+      entity: this,
+      animName: action.getClip().name,
+    });
   };
-
-  private notifyAnimationListeners(name: string) {
-    this.animListeners.get(name)?.forEach((cb) => cb());
-  }
 }
