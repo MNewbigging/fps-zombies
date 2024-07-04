@@ -43,15 +43,12 @@ export class WeaponSystem {
     const renderComponent = assetManager.models.get("pistol");
     assetManager.applyModelTexture(renderComponent, "weapon-atlas");
 
-    const parent = new THREE.Group();
-    parent.add(renderComponent);
+    renderComponent.visible = false; // while not equipped
+    renderComponent.matrixAutoUpdate = false;
 
-    parent.visible = false;
-    parent.matrixAutoUpdate = false;
-    renderComponent.matrixAutoUpdate = true;
-    scene.add(parent);
+    scene.add(renderComponent);
 
-    return parent;
+    return renderComponent;
   }
 
   private onPressR = () => {

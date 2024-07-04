@@ -1,5 +1,6 @@
 import * as TWEEN from "@tweenjs/tween.js";
 import * as YUKA from "yuka";
+import * as THREE from "three";
 import { Weapon } from "../weapons/weapon";
 
 export class TweenFactory {
@@ -30,30 +31,6 @@ export class TweenFactory {
     );
 
     out.chain(back);
-
-    return out;
-  }
-
-  static reloadWeapon(weapon: Weapon) {
-    const startRotation = weapon.rotation.clone();
-    const endRotation = new YUKA.Quaternion()
-      .copy(startRotation)
-      .fromEuler(0, 0, Math.PI / 3);
-
-    const outDuration = 1000;
-    const backDuration = 1000;
-
-    const out = new TWEEN.Tween(weapon).to(
-      {
-        rotation: {
-          x: endRotation.x,
-          y: endRotation.y,
-          z: endRotation.z,
-          w: endRotation.w,
-        },
-      },
-      outDuration
-    );
 
     return out;
   }
