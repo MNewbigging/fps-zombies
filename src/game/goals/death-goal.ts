@@ -2,7 +2,10 @@ import * as YUKA from "yuka";
 import * as THREE from "three";
 import { Zombie } from "../entities/zombie";
 import { TweenFactory } from "../core/tween-factory";
-import { AnimationEndEvent, eventListener } from "../listeners/event-listener";
+import {
+  EntityAnimationEvent,
+  eventListener,
+} from "../listeners/event-listener";
 
 export class DeathGoal extends YUKA.Goal<Zombie> {
   constructor(public owner: Zombie) {
@@ -18,7 +21,7 @@ export class DeathGoal extends YUKA.Goal<Zombie> {
     eventListener.off("entity-anim-end", this.onEntityAnimEnd);
   }
 
-  private onEntityAnimEnd = (animEndEvent: AnimationEndEvent) => {
+  private onEntityAnimEnd = (animEndEvent: EntityAnimationEvent) => {
     // Do we care about this entity?
     if (this.owner !== animEndEvent.entity) {
       return;

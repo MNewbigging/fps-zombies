@@ -7,11 +7,14 @@ import { DeathEvaluator } from "../evaluators/death-evaluator";
 import { AssetManager } from "../core/asset-manager";
 import { GameState } from "../core/game-state";
 import { eventListener } from "../listeners/event-listener";
+import { AttackPlayerGoal } from "../goals/attack-player-goal";
 
 export const POSITION_EQUALITY_TOLERANCE = 1.4;
 
 export class Zombie extends YUKA.Vehicle {
   brain: YUKA.Think<Zombie>;
+
+  pendingAttackId = "";
 
   private navmesh: YUKA.NavMesh;
   private currentRegion: YUKA.Polygon;
@@ -70,6 +73,7 @@ export class Zombie extends YUKA.Vehicle {
 
     this.mixer = new THREE.AnimationMixer(this.renderComponent);
     this.mixer.addEventListener("finished", this.onAnimationEnd);
+    this.mixer.addEventListener("loop", this.onAnimationLoop);
     this.setupAnimations(this.gameState.assetManager);
   }
 
@@ -230,6 +234,14 @@ export class Zombie extends YUKA.Vehicle {
   private onAnimationEnd = (e: any) => {
     const action = e.action as THREE.AnimationAction;
     eventListener.fire("entity-anim-end", {
+      entity: this,
+      animName: action.getClip().name,
+    });
+  };
+
+  private onAnimationLoop = (e: any) => {
+    const action = e.action as THREE.AnimationAction;
+    eventListener.fire("entity-anim-loop", {
       entity: this,
       animName: action.getClip().name,
     });

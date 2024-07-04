@@ -25,3 +25,15 @@ export function getLargestAbsoluteEntries(a: THREE.Vector3, b: THREE.Vector3) {
 
   return new THREE.Vector3(x, y, z);
 }
+export function randomId(length: number = 5) {
+  const characters =
+    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUV0123456789";
+
+  let id = "";
+  for (let i = 0; i < length; i++) {
+    const rnd = Math.floor(Math.random() * characters.length);
+    id += characters.charAt(rnd);
+  }
+
+  return id;
+}

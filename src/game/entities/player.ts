@@ -3,13 +3,15 @@ import * as THREE from "three";
 import { FpsControls } from "../controls/fps-controls";
 import { GameState } from "../core/game-state";
 import { WeaponSystem } from "../core/weapon-system";
-import { Projectile } from "../weapons/projectile";
+import { ZombieAttackData } from "../goals/attack-player-goal";
 
 export class Player extends YUKA.MovingEntity {
   head: YUKA.GameEntity;
   fpsControls: FpsControls;
   weaponContainer: YUKA.GameEntity;
   weaponSystem: WeaponSystem;
+
+  health = 100;
 
   private currentRegion: YUKA.Polygon;
   private currentPosition: YUKA.Vector3;
@@ -59,6 +61,26 @@ export class Player extends YUKA.MovingEntity {
     this.stayInLevel();
 
     return this;
+  }
+
+  override handleMessage(telegram: YUKA.Telegram): boolean {
+    switch (telegram.message) {
+      case "hit":
+        const zombieAttackData = telegram.data as ZombieAttackData;
+
+        // Ensure the incoming attack id matches the pending attack id of the zombie
+        if (
+          zombieAttackData.zombie.pendingAttackId === zombieAttackData.attackId
+        ) {
+          console.log("player hit");
+        } else {
+          console.log("invald attack id");
+        }
+
+        break;
+    }
+
+    return true;
   }
 
   shoot() {

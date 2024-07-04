@@ -4,7 +4,6 @@ import { Player } from "../entities/player";
 import { Projectile } from "./projectile";
 import { TweenFactory } from "../core/tween-factory";
 import { action, makeObservable, observable } from "mobx";
-import { eventListener } from "../listeners/event-listener";
 
 export class Weapon extends YUKA.GameEntity {
   magAmmo = 0;
