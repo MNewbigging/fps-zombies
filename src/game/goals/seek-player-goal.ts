@@ -21,10 +21,10 @@ export class SeekPlayerGoal extends YUKA.Goal<Zombie> {
     this.newPathRegulator.ready();
 
     // Find a new path
-    owner.pathPlanner.findPath(
+    owner.gameState.pathPlanner.findPath(
       owner,
       owner.position.clone(),
-      owner.player.position.clone(),
+      owner.gameState.player.position.clone(),
       this.onPathFound
     );
   }
@@ -43,10 +43,10 @@ export class SeekPlayerGoal extends YUKA.Goal<Zombie> {
     if (this.newPathRegulator.ready()) {
       const owner = this.owner;
 
-      owner.pathPlanner.findPath(
+      owner.gameState.pathPlanner.findPath(
         owner,
         owner.position.clone(),
-        owner.player.position.clone(),
+        owner.gameState.player.position.clone(),
         this.onPathFound
       );
     }

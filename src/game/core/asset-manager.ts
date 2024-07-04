@@ -241,5 +241,15 @@ export class AssetManager {
         this.animations.set(walkClip.name, walkClip);
       }
     });
+
+    const zombieDeathUrl = new URL("/anims/zombie-death.fbx", import.meta.url)
+      .href;
+    fbxLoader.load(zombieDeathUrl, (group) => {
+      if (group.animations.length) {
+        const deathClip = group.animations[0];
+        deathClip.name = "zombie-death";
+        this.animations.set(deathClip.name, deathClip);
+      }
+    });
   }
 }

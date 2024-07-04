@@ -5,6 +5,11 @@ import { Player } from "./player";
 import { SeekPlayerEvaluator } from "../evaluators/seek-player-evaluator";
 import { AttackPlayerEvaluator } from "../evaluators/attack-player-evaluator";
 import { TweenFactory } from "../core/tween-factory";
+import { DeathEvaluator } from "../evaluators/death-evaluator";
+import { AssetManager } from "../core/asset-manager";
+import { GameState } from "../core/game-state";
+
+export type AnimListenerCallback = () => void;
 
 export const POSITION_EQUALITY_TOLERANCE = 1.4;
 
@@ -14,13 +19,15 @@ export class Zombie extends YUKA.Vehicle {
   onPathBehaviour: YUKA.OnPathBehavior;
   brain: YUKA.Think<Zombie>;
 
+  private navmesh: YUKA.NavMesh;
   private currentRegion: YUKA.Polygon;
   private currentPosition: YUKA.Vector3;
   private previousPosition: YUKA.Vector3;
 
-  private mixer?: THREE.AnimationMixer;
+  private mixer: THREE.AnimationMixer;
   private animations = new Map<string, THREE.AnimationAction>();
   private currentAction?: THREE.AnimationAction;
+  private animListeners = new Map<string, AnimListenerCallback[]>();
 
   private lookPosition = new YUKA.Vector3();
   private moveDirection = new YUKA.Vector3();
@@ -29,9 +36,7 @@ export class Zombie extends YUKA.Vehicle {
 
   constructor(
     public renderComponent: THREE.Object3D,
-    public pathPlanner: PathPlanner,
-    public player: Player,
-    public navmesh: YUKA.NavMesh
+    public gameState: GameState
   ) {
     super();
 
@@ -40,6 +45,7 @@ export class Zombie extends YUKA.Vehicle {
     this.brain = new YUKA.Think(this);
     this.brain.addEvaluator(new SeekPlayerEvaluator());
     this.brain.addEvaluator(new AttackPlayerEvaluator());
+    this.brain.addEvaluator(new DeathEvaluator());
 
     // steering
 
@@ -59,9 +65,16 @@ export class Zombie extends YUKA.Vehicle {
 
     // navmesh
 
+    this.navmesh = this.gameState.assetManager.navmesh;
     this.currentPosition = this.position.clone();
     this.previousPosition = this.position.clone();
-    this.currentRegion = navmesh.getClosestRegion(this.position);
+    this.currentRegion = this.navmesh.getClosestRegion(this.position);
+
+    // animations
+
+    this.mixer = new THREE.AnimationMixer(this.renderComponent);
+    this.mixer.addEventListener("finished", this.onAnimationEnd);
+    this.setupAnimations(this.gameState.assetManager);
   }
 
   override start(): this {
@@ -90,22 +103,10 @@ export class Zombie extends YUKA.Vehicle {
     switch (telegram.message) {
       case "hit":
         // Take damage
-        this.takeDamage(10);
+        this.takeDamage(100);
         break;
     }
     return true;
-  }
-
-  setAnimations(mixer: THREE.AnimationMixer, clips: THREE.AnimationClip[]) {
-    this.mixer = mixer;
-
-    clips.forEach((clip) => {
-      const action = mixer.clipAction(clip);
-      // action.play();
-      // action.enabled = false;
-
-      this.animations.set(clip.name, action);
-    });
   }
 
   atPosition(position: YUKA.Vector3) {
@@ -116,7 +117,7 @@ export class Zombie extends YUKA.Vehicle {
     return distance <= tolerance;
   }
 
-  playAnimation(name: string) {
+  playAnimation(name: string, onComplete?: AnimListenerCallback) {
     const nextAction = this.animations.get(name);
     if (!nextAction) {
       throw Error(`Could not find animation with name ${name}`);
@@ -124,6 +125,12 @@ export class Zombie extends YUKA.Vehicle {
 
     if (nextAction.getClip().name === this.currentAction?.getClip().name) {
       return;
+    }
+
+    if (onComplete) {
+      const existing = this.animListeners.get(name) ?? [];
+      existing.push(onComplete);
+      this.animListeners.set(name, existing);
     }
 
     nextAction.reset().setEffectiveTimeScale(1).setEffectiveWeight(1);
@@ -135,15 +142,41 @@ export class Zombie extends YUKA.Vehicle {
     this.currentAction = nextAction;
   }
 
+  isDead() {
+    return this.health <= 0;
+  }
+
+  private setupAnimations(assetManager: AssetManager) {
+    const idleClip = assetManager.animations.get("zombie-idle");
+    const idleAction = this.mixer.clipAction(idleClip);
+    this.animations.set(idleClip.name, idleAction);
+
+    const walkClip = assetManager.animations.get("zombie-walk");
+    const walkAction = this.mixer.clipAction(walkClip);
+    this.animations.set(walkClip.name, walkAction);
+
+    const attackClip = assetManager.animations.get("zombie-attack");
+    const attackAction = this.mixer.clipAction(attackClip);
+    this.animations.set(attackClip.name, attackAction);
+
+    const deathClip = assetManager.animations.get("zombie-death");
+    const deathAction = this.mixer.clipAction(deathClip);
+    deathAction.setLoop(THREE.LoopOnce, 1);
+    deathAction.clampWhenFinished = true;
+    this.animations.set(deathClip.name, deathAction);
+  }
+
   private updateAnimations(dt: number) {
     this.mixer?.update(dt);
 
-    // Direction owner is moving in
-    this.moveDirection.copy(this.velocity).normalize();
-    this.lookPosition.copy(this.position).add(this.moveDirection);
+    if (!this.isDead()) {
+      // Direction owner is moving in
+      this.moveDirection.copy(this.velocity).normalize();
+      this.lookPosition.copy(this.position).add(this.moveDirection);
 
-    // Look towards it over time, in case direction does a sudden u-turn
-    this.rotateTo(this.lookPosition, dt, 0.05);
+      // Look towards it over time, in case direction does a sudden u-turn
+      this.rotateTo(this.lookPosition, dt, 0.05);
+    }
   }
 
   private stayInLevel() {
@@ -183,5 +216,14 @@ export class Zombie extends YUKA.Vehicle {
       new THREE.Color("white")
     );
     flashAnim.start();
+  }
+
+  private onAnimationEnd = (e: any) => {
+    const action = e.action as THREE.AnimationAction;
+    this.notifyAnimationListeners(action.getClip().name);
+  };
+
+  private notifyAnimationListeners(name: string) {
+    this.animListeners.get(name)?.forEach((cb) => cb());
   }
 }

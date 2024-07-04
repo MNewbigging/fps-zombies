@@ -25,9 +25,9 @@ export class GameState {
   private time = new YUKA.Time();
   private entityManager = new YUKA.EntityManager();
 
-  private level: Level;
-  private player: Player;
-  private pathPlanner: PathPlanner;
+  level: Level;
+  player: Player;
+  pathPlanner: PathPlanner;
   private zombies: Zombie[] = [];
 
   constructor(public assetManager: AssetManager) {
@@ -234,26 +234,16 @@ export class GameState {
         child.material = new THREE.MeshLambertMaterial({
           map: texture,
           vertexColors: false,
+          transparent: true,
+          opacity: 1,
         });
       }
     });
 
-    const zombie = new Zombie(
-      renderComponent,
-      this.pathPlanner,
-      this.player,
-      this.assetManager.navmesh
-    );
+    const zombie = new Zombie(renderComponent, this);
     zombie.scale.multiplyScalar(0.01);
     zombie.position.copy(position);
     this.addEntity(zombie, renderComponent);
-
-    const mixer = new THREE.AnimationMixer(renderComponent);
-    const idleClip = this.assetManager.animations.get("zombie-idle");
-    const walkClip = this.assetManager.animations.get("zombie-walk");
-    const attackClip = this.assetManager.animations.get("zombie-attack");
-    const clips = [idleClip, walkClip, attackClip];
-    zombie.setAnimations(mixer, clips);
 
     return zombie;
   }

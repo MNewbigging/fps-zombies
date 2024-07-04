@@ -16,7 +16,7 @@ export class AttackPlayerGoal extends YUKA.Goal<Zombie> {
     const owner = this.owner;
 
     // Face the player
-    this.lookDirection = owner.player.position
+    this.lookDirection = owner.gameState.player.position
       .clone()
       .sub(owner.position)
       .normalize();

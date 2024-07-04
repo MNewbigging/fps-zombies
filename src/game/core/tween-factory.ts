@@ -38,7 +38,6 @@ export class TweenFactory {
 
   static zombieEmissiveFlash(object: THREE.Mesh, colour: THREE.Color) {
     const zombieChild = object.children[1] as THREE.SkinnedMesh;
-    console.log("targeting", zombieChild.name);
     const material = zombieChild.material as THREE.MeshLambertMaterial;
     material.emissive = colour.clone();
     material.emissiveIntensity = 0;
@@ -49,14 +48,12 @@ export class TweenFactory {
     const outDuration = 100;
     const backDuration = 100;
 
-    const out = new TWEEN.Tween(material)
-      .to(
-        {
-          emissiveIntensity: endValue,
-        },
-        outDuration
-      )
-      .onUpdate((object) => console.log("em", object.emissiveIntensity));
+    const out = new TWEEN.Tween(material).to(
+      {
+        emissiveIntensity: endValue,
+      },
+      outDuration
+    );
 
     const back = new TWEEN.Tween(material).to(
       {
@@ -66,6 +63,20 @@ export class TweenFactory {
     );
 
     out.chain(back);
+
+    return out;
+  }
+
+  static zombieFadeOut(object: THREE.Mesh) {
+    const zombieChild = object.children[1] as THREE.SkinnedMesh;
+    const material = zombieChild.material as THREE.MeshLambertMaterial;
+
+    material.transparent = true;
+    material.opacity = 1;
+
+    const duration = 2000;
+
+    const out = new TWEEN.Tween(material).to({ opacity: 0 }, duration);
 
     return out;
   }
