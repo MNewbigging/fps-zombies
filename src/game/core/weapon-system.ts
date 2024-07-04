@@ -4,6 +4,7 @@ import { Player } from "../entities/player";
 import { sync } from "./game-state";
 import { Weapon } from "../weapons/weapon";
 import { Pistol } from "../weapons/pistol";
+import { keyboardListener } from "../listeners/keyboard-listener";
 
 /**
  * Responsible for equipping and swapping weapons, setting up render components.
@@ -19,10 +20,14 @@ export class WeaponSystem {
     // setup render components for all weapons
 
     this.pistolRenderComponent = this.setupPistolRenderComponent();
+
+    // reload listener
+
+    keyboardListener.on("r", this.onPressR);
   }
 
   equipPistol() {
-    const pistol = new Pistol(this.player);
+    const pistol = new Pistol(this.player, this.pistolRenderComponent);
     pistol.setRenderComponent(this.pistolRenderComponent, sync);
     this.pistolRenderComponent.visible = true;
     this.player.weaponContainer.add(pistol);
@@ -37,10 +42,20 @@ export class WeaponSystem {
 
     const renderComponent = assetManager.models.get("pistol");
     assetManager.applyModelTexture(renderComponent, "weapon-atlas");
-    renderComponent.visible = false;
-    renderComponent.matrixAutoUpdate = false;
-    scene.add(renderComponent);
 
-    return renderComponent;
+    const parent = new THREE.Group();
+    parent.add(renderComponent);
+
+    parent.visible = false;
+    parent.matrixAutoUpdate = false;
+    renderComponent.matrixAutoUpdate = true;
+    scene.add(parent);
+
+    return parent;
   }
+
+  private onPressR = () => {
+    // Reload the current weapon
+    this.currentWeapon?.reload();
+  };
 }

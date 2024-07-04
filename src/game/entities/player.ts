@@ -7,7 +7,6 @@ import { Projectile } from "../weapons/projectile";
 
 export class Player extends YUKA.MovingEntity {
   head: YUKA.GameEntity;
-  height = 1.7;
   fpsControls: FpsControls;
   weaponContainer: YUKA.GameEntity;
   weaponSystem: WeaponSystem;
@@ -26,7 +25,7 @@ export class Player extends YUKA.MovingEntity {
 
     this.head = new YUKA.GameEntity();
     this.head.forward.set(0, 0, -1);
-    this.head.position.y = this.height;
+    this.head.position.y = 1.7;
     this.add(this.head);
 
     // player owns the first person controls
@@ -70,7 +69,6 @@ export class Player extends YUKA.MovingEntity {
     // First, check if player is able to shoot before doing more work
     const equippedWeapon = this.weaponSystem.currentWeapon;
     if (!equippedWeapon || !equippedWeapon.canShoot()) {
-      console.log("cant shoot");
       return;
     }
 

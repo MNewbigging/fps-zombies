@@ -1,10 +1,11 @@
 import * as YUKA from "yuka";
+import * as THREE from "three";
 import { Weapon } from "./weapon";
 import { Player } from "../entities/player";
 
 export class Pistol extends Weapon {
-  constructor(public player: Player) {
-    super(player);
+  constructor(public player: Player, public renderComponent: THREE.Object3D) {
+    super(player, renderComponent);
 
     // setup pistol properties
 
@@ -20,7 +21,7 @@ export class Pistol extends Weapon {
     this.rotation.fromEuler(0, Math.PI, 0);
     this.position.set(0.15, -0.15, -0.5);
 
-    // muzzle is a chidl, position it relative to gun
+    // muzzle is a child, position it relative to gun
 
     this.muzzle.position.set(0, 8, 50);
   }

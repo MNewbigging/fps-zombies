@@ -1,6 +1,6 @@
 export type KeyEventCallback = () => void;
 
-export class KeyboardListener {
+class KeyboardListener {
   private pressedKeys = new Set<string>();
   private pressCallbacks = new Map<string, KeyEventCallback[]>();
   private releaseCallbacks = new Map<string, KeyEventCallback[]>();
@@ -75,3 +75,5 @@ export class KeyboardListener {
     this.pressedKeys.delete(e.key.toLocaleLowerCase());
   };
 }
+
+export const keyboardListener = new KeyboardListener();

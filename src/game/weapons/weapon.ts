@@ -14,15 +14,27 @@ export class Weapon extends YUKA.GameEntity {
 
   msBetweenShots = 1000; // 60 rpm default
   private lastShotTime = 0;
-  private spread = new YUKA.Vector3();
 
-  constructor(public player: Player) {
+  private mixer: THREE.AnimationMixer;
+  private reloadAction?: THREE.AnimationAction;
+
+  constructor(public player: Player, public renderComponent: THREE.Object3D) {
     super();
 
     this.canActivateTrigger = false;
 
     this.muzzle = new YUKA.GameEntity();
     this.add(this.muzzle);
+
+    // animations
+
+    this.mixer = new THREE.AnimationMixer(renderComponent);
+    renderComponent.traverse((child) => {
+      if (child.animations.length) {
+        this.reloadAction = this.mixer.clipAction(child.animations[0]);
+        this.reloadAction.setLoop(THREE.LoopOnce, 1);
+      }
+    });
   }
 
   setRpm(rpm: number) {
@@ -42,7 +54,11 @@ export class Weapon extends YUKA.GameEntity {
     // start the equip animation
   }
 
-  reload() {}
+  reload() {
+    console.log("playing anim", this.reloadAction);
+    console.log("comp", this.renderComponent);
+    this.reloadAction?.reset().play();
+  }
 
   canShoot() {
     const now = performance.now();
@@ -56,7 +72,6 @@ export class Weapon extends YUKA.GameEntity {
 
   shoot(ray: YUKA.Ray, targetPosition: YUKA.Vector3) {
     if (!this.canShoot()) {
-      console.log("wait");
       return;
     }
 
@@ -66,9 +81,7 @@ export class Weapon extends YUKA.GameEntity {
 
     // animation
 
-    const recoilAnim = TweenFactory.recoilWeapon(this, () => {
-      //
-    });
+    const recoilAnim = TweenFactory.recoilWeapon(this);
     recoilAnim.start();
 
     // create bullet
@@ -109,6 +122,7 @@ export class Weapon extends YUKA.GameEntity {
     super.update(delta);
 
     // update animation mixer
+    this.mixer.update(delta);
 
     return this;
   }

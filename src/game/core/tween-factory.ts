@@ -3,7 +3,7 @@ import * as YUKA from "yuka";
 import { Weapon } from "../weapons/weapon";
 
 export class TweenFactory {
-  static recoilWeapon(weapon: Weapon, onComplete: () => void) {
+  static recoilWeapon(weapon: Weapon) {
     const startPos = weapon.position.clone();
 
     // move this into weapon later
@@ -22,16 +22,38 @@ export class TweenFactory {
       outDuration
     );
 
-    const back = new TWEEN.Tween(weapon)
-      .to(
-        {
-          position: { y: startPos.y, z: startPos.z },
-        },
-        backDuration
-      )
-      .onComplete(onComplete);
+    const back = new TWEEN.Tween(weapon).to(
+      {
+        position: { y: startPos.y, z: startPos.z },
+      },
+      backDuration
+    );
 
     out.chain(back);
+
+    return out;
+  }
+
+  static reloadWeapon(weapon: Weapon) {
+    const startRotation = weapon.rotation.clone();
+    const endRotation = new YUKA.Quaternion()
+      .copy(startRotation)
+      .fromEuler(0, 0, Math.PI / 3);
+
+    const outDuration = 1000;
+    const backDuration = 1000;
+
+    const out = new TWEEN.Tween(weapon).to(
+      {
+        rotation: {
+          x: endRotation.x,
+          y: endRotation.y,
+          z: endRotation.z,
+          w: endRotation.w,
+        },
+      },
+      outDuration
+    );
 
     return out;
   }
