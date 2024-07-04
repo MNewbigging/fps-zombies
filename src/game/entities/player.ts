@@ -4,6 +4,7 @@ import { FpsControls } from "../controls/fps-controls";
 import { GameState } from "../core/game-state";
 import { WeaponSystem } from "../core/weapon-system";
 import { ZombieAttackData } from "../goals/attack-player-goal";
+import { action, makeObservable, observable } from "mobx";
 
 export class Player extends YUKA.MovingEntity {
   head: YUKA.GameEntity;
@@ -22,6 +23,11 @@ export class Player extends YUKA.MovingEntity {
 
   constructor(public gameState: GameState) {
     super();
+
+    makeObservable(this, {
+      health: observable,
+      takeDamage: action,
+    });
 
     // the camera is attached to the player's head
 
@@ -72,11 +78,8 @@ export class Player extends YUKA.MovingEntity {
         if (
           zombieAttackData.zombie.pendingAttackId === zombieAttackData.attackId
         ) {
-          console.log("player hit");
-        } else {
-          console.log("invald attack id");
+          this.takeDamage();
         }
-
         break;
     }
 
@@ -129,6 +132,11 @@ export class Player extends YUKA.MovingEntity {
     if (intersection.entity) {
       this.sendMessage(intersection.entity, "hit", 0, intersection);
     }
+  }
+
+  takeDamage() {
+    this.health -= 25;
+    console.log("took damage, remaining health", this.health);
   }
 
   private stayInLevel() {

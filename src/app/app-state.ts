@@ -26,6 +26,10 @@ export class AppState {
     return this.gameState?.player.weaponSystem.currentWeapon?.reserveAmmo ?? 0;
   }
 
+  @computed getPlayerHealth() {
+    return this.gameState?.player.health ?? 0;
+  }
+
   @action startGame = () => {
     // Then setup a new game state
     this.gameState = new GameState(this.assetManager);
