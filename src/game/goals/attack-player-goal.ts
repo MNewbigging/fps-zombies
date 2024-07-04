@@ -49,7 +49,10 @@ export class AttackPlayerGoal extends YUKA.Goal<Zombie> {
   }
 
   private onAnimationLoop = (event: EntityAnimationEvent) => {
-    this.createPendingAttack();
+    // Ensure this was the attack animation for the owner zombie
+    if (event.entity === this.owner && event.animName === "zombie-attack") {
+      this.createPendingAttack();
+    }
   };
 
   private createPendingAttack() {
