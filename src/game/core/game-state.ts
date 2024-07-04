@@ -8,6 +8,7 @@ import { Player } from "../entities/player";
 import { Zombie } from "../entities/zombie";
 import { PathPlanner } from "./path-planner";
 import { getLargestAbsoluteEntries } from "../utils/utils";
+import { ZombieManager } from "./zombie-manager";
 
 export interface IntersectionData {
   sceneIntersection?: THREE.Intersection;
@@ -28,6 +29,7 @@ export class GameState {
   level: Level;
   player: Player;
   pathPlanner: PathPlanner;
+  zombieManager: ZombieManager;
   private zombies: Zombie[] = [];
 
   constructor(public assetManager: AssetManager) {
@@ -39,9 +41,9 @@ export class GameState {
 
     this.level = this.setupLevel();
     this.player = this.setupPlayer();
-    const zombie1 = this.setupZombie(new YUKA.Vector3(2, 0, -1));
-    const zombie2 = this.setupZombie(new YUKA.Vector3(2, 0, -5));
-    this.zombies.push(zombie1, zombie2);
+
+    this.zombieManager = new ZombieManager(this);
+    this.zombieManager.spawnZombie(0, 0, -5);
   }
 
   start() {
@@ -59,9 +61,24 @@ export class GameState {
   };
 
   addEntity(entity: YUKA.GameEntity, renderComponent: THREE.Object3D) {
+    // Turn off matrix auto updates
     renderComponent.matrixAutoUpdate = false;
+    renderComponent.updateMatrix();
+
+    renderComponent.traverse((child) => {
+      if (child instanceof THREE.Mesh) {
+        child.matrixAutoUpdate = false;
+        child.updateMatrix();
+      }
+    });
+
+    // Add it to the scene
     this.scene.add(renderComponent);
+
+    // Setup the sync callback
     entity.setRenderComponent(renderComponent, sync);
+
+    // Give to entity manager
     this.entityManager.add(entity);
   }
 
@@ -274,6 +291,8 @@ export class GameState {
       this.pathPlanner.update();
 
       TWEEN.update();
+
+      this.zombieManager.update(dt);
     }
 
     this.renderer.clear();

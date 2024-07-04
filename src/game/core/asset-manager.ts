@@ -135,7 +135,7 @@ export class AssetManager {
       import.meta.url
     ).href;
     fbxLoader.load(zombieUrl, (group) => {
-      this.prepModel(group);
+      //this.prepModel(group);
       group.name = "zombie";
       this.models.set("zombie", group);
     });
