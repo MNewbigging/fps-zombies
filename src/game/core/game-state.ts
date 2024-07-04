@@ -41,6 +41,7 @@ export class GameState {
 
     this.level = this.setupLevel();
     this.player = this.setupPlayer();
+    this.player.position.set(-4, 0, 1);
 
     this.zombieManager = new ZombieManager(this);
     this.zombieManager.spawnZombie(0, 0, -5);
@@ -291,8 +292,6 @@ export class GameState {
       this.pathPlanner.update();
 
       TWEEN.update();
-
-      this.zombieManager.update(dt);
     }
 
     this.renderer.clear();

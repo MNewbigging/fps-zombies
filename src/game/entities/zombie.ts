@@ -7,7 +7,6 @@ import { DeathEvaluator } from "../evaluators/death-evaluator";
 import { AssetManager } from "../core/asset-manager";
 import { GameState } from "../core/game-state";
 import { eventListener } from "../listeners/event-listener";
-import { AttackPlayerGoal } from "../goals/attack-player-goal";
 
 export const POSITION_EQUALITY_TOLERANCE = 1.4;
 
@@ -15,6 +14,8 @@ export class Zombie extends YUKA.Vehicle {
   brain: YUKA.Think<Zombie>;
 
   pendingAttackId = "";
+
+  private spawned = false;
 
   private navmesh: YUKA.NavMesh;
   private currentRegion: YUKA.Polygon;
@@ -42,9 +43,6 @@ export class Zombie extends YUKA.Vehicle {
     // goals
 
     this.brain = new YUKA.Think(this);
-    this.brain.addEvaluator(new SeekPlayerEvaluator());
-    this.brain.addEvaluator(new AttackPlayerEvaluator());
-    this.brain.addEvaluator(new DeathEvaluator());
 
     // steering
 
@@ -77,24 +75,17 @@ export class Zombie extends YUKA.Vehicle {
     this.setupAnimations(this.gameState.assetManager);
   }
 
-  override start(): this {
-    // default animation
-
-    this.playAnimation("zombie-idle");
-
-    return this;
-  }
-
   override update(delta: number): this {
     super.update(delta);
 
-    this.brain.execute();
+    this.mixer?.update(delta);
 
-    this.brain.arbitrate();
-
-    this.stayInLevel();
-
-    this.updateAnimations(delta);
+    if (this.spawned) {
+      //this.brain.execute();
+      //this.brain.arbitrate();
+      //this.stayInLevel();
+      //this.faceForwards(delta);
+    }
 
     return this;
   }
@@ -122,6 +113,30 @@ export class Zombie extends YUKA.Vehicle {
 
   isDead() {
     return this.health <= 0;
+  }
+
+  completeSpawn() {
+    // Runs after spawned onto the map
+    this.brain.addEvaluator(new SeekPlayerEvaluator());
+    this.brain.addEvaluator(new AttackPlayerEvaluator());
+    this.brain.addEvaluator(new DeathEvaluator());
+
+    // Manually play idle anim immediately
+    this.currentAction?.stop();
+    const idle = this.animations.get("zombie-idle");
+    idle?.play();
+
+    this.position.y = 0;
+
+    /**
+     * TODO:
+     *
+     * drop the spawn animations for now
+     * just spawn out of sight
+     * needs a level design
+     */
+
+    this.spawned = true;
   }
 
   followPath(path: YUKA.Vector3[]) {
@@ -160,6 +175,12 @@ export class Zombie extends YUKA.Vehicle {
   }
 
   private setupAnimations(assetManager: AssetManager) {
+    const climbClip = assetManager.animations.get("zombie-climb");
+    const climbAction = this.mixer.clipAction(climbClip);
+    climbAction.setLoop(THREE.LoopOnce, 1);
+    //climbAction.clampWhenFinished = true;
+    this.animations.set(climbClip.name, climbAction);
+
     const idleClip = assetManager.animations.get("zombie-idle");
     const idleAction = this.mixer.clipAction(idleClip);
     this.animations.set(idleClip.name, idleAction);
@@ -179,9 +200,7 @@ export class Zombie extends YUKA.Vehicle {
     this.animations.set(deathClip.name, deathAction);
   }
 
-  private updateAnimations(dt: number) {
-    this.mixer?.update(dt);
-
+  private faceForwards(dt: number) {
     if (!this.isDead()) {
       // Direction owner is moving in
       this.moveDirection.copy(this.velocity).normalize();

@@ -1,17 +1,18 @@
 import * as THREE from "three";
 import { GameState } from "./game-state";
 import { Zombie } from "../entities/zombie";
-
-interface ZombieSpawn {
-  mixer: THREE.AnimationMixer;
-  renderComponent: THREE.Object3D;
-}
+import {
+  EntityAnimationEvent,
+  eventListener,
+} from "../listeners/event-listener";
 
 export class ZombieManager {
-  private mixers: THREE.AnimationMixer[] = [];
-  private climbOffsetY = -2.25;
+  zombies: Zombie[] = [];
+  private spawningZombies: Zombie[] = [];
 
-  constructor(private gameState: GameState) {}
+  constructor(private gameState: GameState) {
+    eventListener.on("entity-anim-end", this.onAnimationEnd);
+  }
 
   spawnZombie(x: number, y: number, z: number) {
     const assetManager = this.gameState.assetManager;
@@ -29,55 +30,42 @@ export class ZombieManager {
         });
       }
     });
-    renderComponent.scale.multiplyScalar(0.01);
 
-    // Place it at the spawn point minus y offset for climb anim
-    renderComponent.position.set(x, y, z);
-    renderComponent.position.y += this.climbOffsetY;
-
-    // Setup animations
-    const mixer = new THREE.AnimationMixer(renderComponent);
-    const climbClip = assetManager.animations.get("zombie-climb");
-    const climbAction = mixer.clipAction(climbClip);
-    climbAction.setLoop(THREE.LoopOnce, 1);
-    climbAction.clampWhenFinished = true;
-
-    this.mixers.push(mixer);
-    mixer.addEventListener("finished", () =>
-      this.onAnimationEnd(mixer, renderComponent)
-    );
-
-    // Add to scene
-    this.gameState.scene.add(renderComponent);
-
-    // Start spawn animation
-    climbAction.play();
-  }
-
-  update(dt: number) {
-    // Update spawning zombie mixers
-    this.mixers.forEach((mixer) => mixer.update(dt));
-  }
-
-  private onAnimationEnd = (
-    mixer: THREE.AnimationMixer,
-    renderComponent: THREE.Object3D
-  ) => {
-    console.log("over", renderComponent.position);
-
-    // Remove this render comp from the scene
-    this.gameState.scene.remove(renderComponent);
-
-    // Create a zombie now that it is on the map
+    // Create the zombie
     const zombie = new Zombie(renderComponent, this.gameState);
-    zombie.scale.multiplyScalar(0.01);
-    zombie.position.set(
-      renderComponent.position.x,
-      renderComponent.position.y,
-      renderComponent.position.z
-    );
-    zombie.position.y += this.climbOffsetY;
+    zombie.scale.multiplyScalar(0.01); // massive synty models
 
+    // Position according to spawn point
+    zombie.position.set(-6, y, z);
+
+    // Adjust position as required by the spawn animation (e.g 'climb' needs to start lower down)
+    zombie.position.y -= 2.3;
+
+    // Add the zombie
     this.gameState.addEntity(zombie, renderComponent);
+    this.spawningZombies.push(zombie);
+
+    // Start the spawning animation
+    zombie.playAnimation("zombie-climb");
+  }
+
+  private onAnimationEnd = (event: EntityAnimationEvent) => {
+    // Is this for a spawning zombie?
+    const zombieIndex = this.spawningZombies.findIndex(
+      (zombie) => zombie === event.entity
+    );
+    if (zombieIndex === -1) {
+      return;
+    }
+
+    const zombie = this.spawningZombies[zombieIndex];
+
+    // zombie.playAnimation("zombie-idle");
+    // zombie.position.y = 0;
+
+    zombie.completeSpawn();
+
+    this.spawningZombies.splice(zombieIndex, 1);
+    this.zombies.push(zombie);
   };
 }

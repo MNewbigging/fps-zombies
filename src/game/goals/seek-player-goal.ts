@@ -27,6 +27,8 @@ export class SeekPlayerGoal extends YUKA.Goal<Zombie> {
       owner.gameState.player.position.clone(),
       this.onPathFound
     );
+
+    console.log("vel 2", this.owner.velocity);
   }
 
   override execute(): void {

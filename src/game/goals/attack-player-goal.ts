@@ -41,7 +41,7 @@ export class AttackPlayerGoal extends YUKA.Goal<Zombie> {
   }
 
   override terminate(): void {
-    // clear and pending attacks
+    // clear any pending attacks
     this.owner.pendingAttackId = "";
 
     // remove listeners
