@@ -4,6 +4,7 @@ import { Player } from "../entities/player";
 import { Projectile } from "./projectile";
 import { TweenFactory } from "../core/tween-factory";
 import { action, makeObservable, observable } from "mobx";
+import { eventListener } from "../listeners/event-listener";
 
 export class Weapon extends YUKA.GameEntity {
   magAmmo = 0;
@@ -42,6 +43,7 @@ export class Weapon extends YUKA.GameEntity {
     // animations
 
     this.mixer = new THREE.AnimationMixer(renderComponent);
+    this.mixer.addEventListener("finished", this.onAnimationEnd);
     renderComponent.traverse((child) => {
       if (child.animations.length) {
         this.reloadAction = this.mixer.clipAction(child.animations[0]);
@@ -68,7 +70,10 @@ export class Weapon extends YUKA.GameEntity {
   }
 
   reload() {
-    this.reloadAction?.reset().play();
+    if (this.reserveAmmo > 0) {
+      // Play the animation, when it ends it'll call this.onAnimationEnd
+      this.reloadAction?.reset().play();
+    }
   }
 
   canShoot() {
@@ -139,4 +144,20 @@ export class Weapon extends YUKA.GameEntity {
 
     return this;
   }
+
+  private onAnimationEnd = () => {
+    // For now, the only mixer animation on the weapon is reload
+
+    // Add any bullets left in ejected mag back into reserve
+    this.reserveAmmo += this.magAmmo;
+
+    // Fill mag from reserve
+    if (this.reserveAmmo >= this.magLimit) {
+      this.magAmmo = this.magLimit;
+      this.reserveAmmo -= this.magLimit;
+    } else {
+      this.magAmmo = this.reserveAmmo;
+      this.reserveAmmo = 0;
+    }
+  };
 }
