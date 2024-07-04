@@ -1,6 +1,5 @@
 import * as THREE from "three";
 import * as YUKA from "yuka";
-import { Projectile } from "../weapons/projectile";
 
 // Todo - find a better place for stuff like this
 export interface AnimationEndEvent {
@@ -10,7 +9,6 @@ export interface AnimationEndEvent {
 
 export interface EventMap {
   "entity-anim-end": AnimationEndEvent;
-  "projectile-hit": Projectile;
 }
 
 type EventCallback = (event: any) => void;

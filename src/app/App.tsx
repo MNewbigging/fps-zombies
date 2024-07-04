@@ -23,7 +23,7 @@ export const App: React.FC<AppProps> = observer(({ appState }) => {
 
       {paused && gameState && <PauseScreen gameState={gameState} />}
 
-      {started && !paused && gameState && <GameScreen gameState={gameState} />}
+      {started && !paused && gameState && <GameScreen appState={appState} />}
     </div>
   );
 });

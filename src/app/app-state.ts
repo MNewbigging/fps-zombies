@@ -1,5 +1,5 @@
 import { GameState } from "../game/core/game-state";
-import { action, makeAutoObservable, observable } from "mobx";
+import { action, computed, makeAutoObservable, observable } from "mobx";
 import { AssetManager } from "../game/core/asset-manager";
 
 export class AppState {
@@ -18,7 +18,16 @@ export class AppState {
     setTimeout(() => this.loadGame(), 10);
   }
 
+  @computed getCurrentMagAmmo() {
+    return this.gameState?.player.weaponSystem.currentWeapon?.magAmmo ?? 0;
+  }
+
+  @computed getCurrentReserveAmmo() {
+    return this.gameState?.player.weaponSystem.currentWeapon?.reserveAmmo ?? 0;
+  }
+
   @action startGame = () => {
+    // Then setup a new game state
     this.gameState = new GameState(this.assetManager);
     this.gameState.start();
     this.started = true;

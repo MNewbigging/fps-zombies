@@ -1,23 +1,22 @@
 import { observer } from "mobx-react-lite";
 import "./ammo-display.scss";
 import React from "react";
-import { GameState } from "../../game/core/game-state";
+import { AppState } from "../../app/app-state";
 
-interface HudProps {
-  gameState: GameState;
+interface AmmoDisplayProps {
+  appState: AppState;
 }
 
-export const AmmoDisplay: React.FC<HudProps> = observer(({ gameState }) => {
-  const equippedGun = gameState.equipmentManager.equippedGun;
-  if (!equippedGun) {
-    return null;
+export const AmmoDisplay: React.FC<AmmoDisplayProps> = observer(
+  ({ appState }) => {
+    const ammo = appState.getCurrentMagAmmo();
+    const reserve = appState.getCurrentReserveAmmo();
+
+    return (
+      <div className="ammo-display">
+        <span className="ammo">{ammo} | </span>
+        <span className="reserve">{reserve}</span>
+      </div>
+    );
   }
-
-  const ammo = equippedGun.magAmmo;
-
-  return (
-    <div className="ammo-display">
-      Ammo {ammo} {ammo === 0 && <span>RELOAD (r)</span>}{" "}
-    </div>
-  );
-});
+);

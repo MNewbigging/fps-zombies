@@ -3,6 +3,7 @@ import * as THREE from "three";
 import { Player } from "../entities/player";
 import { Projectile } from "./projectile";
 import { TweenFactory } from "../core/tween-factory";
+import { action, makeObservable, observable } from "mobx";
 
 export class Weapon extends YUKA.GameEntity {
   magAmmo = 0;
@@ -21,7 +22,19 @@ export class Weapon extends YUKA.GameEntity {
   constructor(public player: Player, public renderComponent: THREE.Object3D) {
     super();
 
+    // observables
+
+    makeObservable(this, {
+      magAmmo: observable,
+      reserveAmmo: observable,
+      shoot: action,
+    });
+
+    //
+
     this.canActivateTrigger = false;
+
+    // muzzle
 
     this.muzzle = new YUKA.GameEntity();
     this.add(this.muzzle);
@@ -55,8 +68,6 @@ export class Weapon extends YUKA.GameEntity {
   }
 
   reload() {
-    console.log("playing anim", this.reloadAction);
-    console.log("comp", this.renderComponent);
     this.reloadAction?.reset().play();
   }
 
@@ -89,6 +100,8 @@ export class Weapon extends YUKA.GameEntity {
     this.addBullet(ray, targetPosition);
 
     // adjust ammo
+
+    this.magAmmo = Math.max(0, this.magAmmo - 1);
   }
 
   addBullet(ray: YUKA.Ray, targetPosition: YUKA.Vector3) {
