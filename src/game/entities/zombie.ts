@@ -103,7 +103,10 @@ export class Zombie extends YUKA.Vehicle {
     switch (telegram.message) {
       case "hit":
         // Take damage
-        this.takeDamage(100);
+        if (!this.isDead()) {
+          this.takeDamage(100);
+        }
+
         break;
     }
     return true;

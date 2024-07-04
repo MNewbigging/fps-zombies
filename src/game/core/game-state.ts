@@ -69,11 +69,27 @@ export class GameState {
   }
 
   removeEntity(entity: YUKA.GameEntity) {
+    // Remove the entity from manager
     this.entityManager.remove(entity);
 
+    // Remove from any lists
+    if (entity instanceof Zombie) {
+      this.zombies = this.zombies.filter((zombie) => zombie !== entity);
+    }
+
+    // Dispose of threejs render component
     const e = entity as any;
     if (e._renderComponent !== null) {
-      this.scene.remove(e._renderComponent);
+      const object = e._renderComponent as THREE.Object3D;
+
+      object.traverse((child) => {
+        if (child instanceof THREE.Mesh) {
+          child.geometry.dispose();
+          child.material.dispose();
+        }
+      });
+
+      this.scene.remove(object);
     }
   }
 

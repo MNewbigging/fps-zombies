@@ -19,7 +19,6 @@ export class DeathGoal extends YUKA.Goal<Zombie> {
     );
 
     fadeOutAnim.onComplete(() => {
-      // Zombies need proper disposal of geometries and materials...
       this.owner.gameState.removeEntity(this.owner);
     });
 
