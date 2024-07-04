@@ -242,6 +242,7 @@ export class AssetManager {
       }
     });
 
+    // not in use right now
     const zombieClimbUrl = new URL("/anims/zombie-climb.fbx", import.meta.url)
       .href;
     fbxLoader.load(zombieClimbUrl, (group) => {

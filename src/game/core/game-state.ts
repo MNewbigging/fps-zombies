@@ -5,7 +5,6 @@ import * as TWEEN from "@tweenjs/tween.js";
 import { AssetManager } from "./asset-manager";
 import { Level } from "../entities/level";
 import { Player } from "../entities/player";
-import { Zombie } from "../entities/zombie";
 import { PathPlanner } from "./path-planner";
 import { getLargestAbsoluteEntries } from "../utils/utils";
 import { ZombieManager } from "./zombie-manager";
@@ -30,7 +29,6 @@ export class GameState {
   player: Player;
   pathPlanner: PathPlanner;
   zombieManager: ZombieManager;
-  private zombies: Zombie[] = [];
 
   constructor(public assetManager: AssetManager) {
     makeAutoObservable(this);
@@ -41,10 +39,9 @@ export class GameState {
 
     this.level = this.setupLevel();
     this.player = this.setupPlayer();
-    this.player.position.set(-4, 0, 1);
 
     this.zombieManager = new ZombieManager(this);
-    this.zombieManager.spawnZombie(0, 0, -5);
+    this.zombieManager.spawnZombie(2, 0, -5);
   }
 
   start() {
@@ -88,9 +85,7 @@ export class GameState {
     this.entityManager.remove(entity);
 
     // Remove from any lists
-    if (entity instanceof Zombie) {
-      this.zombies = this.zombies.filter((zombie) => zombie !== entity);
-    }
+    this.zombieManager.removeZombie(entity);
 
     // Dispose of threejs render component
     const e = entity as any;
@@ -114,7 +109,7 @@ export class GameState {
     this.raycaster.setFromCamera({ x: 0, y: 0 }, this.camera);
 
     // Test against zombies first
-    for (const zombie of this.zombies) {
+    for (const zombie of this.zombieManager.zombies) {
       const zombieIntersections = this.raycaster.intersectObject(
         zombie.renderComponent,
         true
@@ -256,28 +251,6 @@ export class GameState {
     player.weaponSystem.equipPistol();
 
     return player;
-  }
-
-  private setupZombie(position: YUKA.Vector3) {
-    const renderComponent = this.assetManager.cloneModel("zombie");
-    const texture = this.assetManager.textures.get("zombie-atlas");
-    renderComponent.traverse((child) => {
-      if (child instanceof THREE.Mesh) {
-        child.material = new THREE.MeshLambertMaterial({
-          map: texture,
-          vertexColors: false,
-          transparent: true,
-          opacity: 1,
-        });
-      }
-    });
-
-    const zombie = new Zombie(renderComponent, this);
-    zombie.scale.multiplyScalar(0.01);
-    zombie.position.copy(position);
-    this.addEntity(zombie, renderComponent);
-
-    return zombie;
   }
 
   private update = () => {
