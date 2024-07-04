@@ -4,9 +4,9 @@ import React from "react";
 import { observer } from "mobx-react-lite";
 
 import { AppState } from "./app-state";
-import { LoadingScreen } from "../loading-screen/loading-screen";
-import { PauseScreen } from "../pause-screen/pause-screen";
-import { GameScreen } from "../game-screen/game-screen";
+import { GameScreen } from "../ui/game-screen/game-screen";
+import { LoadingScreen } from "../ui/loading-screen/loading-screen";
+import { PauseScreen } from "../ui/pause-screen/pause-screen";
 
 interface AppProps {
   appState: AppState;

@@ -1,7 +1,7 @@
 import { observer } from "mobx-react-lite";
-import { GameState } from "../game/core/game-state";
 import "./pause-screen.scss";
 import React from "react";
+import { GameState } from "../../game/core/game-state";
 
 interface PauseScreenProps {
   gameState: GameState;

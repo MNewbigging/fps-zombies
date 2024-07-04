@@ -1,7 +1,7 @@
 import { observer } from "mobx-react-lite";
-import { GameState } from "../game/core/game-state";
 import "./game-screen.scss";
 import React from "react";
+import { GameState } from "../../game/core/game-state";
 import { Reticle } from "../reticle/reticle";
 
 interface GameScreenProps {
