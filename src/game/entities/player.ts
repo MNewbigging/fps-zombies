@@ -135,8 +135,7 @@ export class Player extends YUKA.MovingEntity {
   }
 
   takeDamage() {
-    this.health -= 25;
-    console.log("took damage, remaining health", this.health);
+    this.health = Math.max(0, this.health - 25);
   }
 
   private stayInLevel() {

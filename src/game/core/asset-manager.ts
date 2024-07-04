@@ -148,16 +148,6 @@ export class AssetManager {
       this.models.set("pistol", group);
     });
 
-    // bullet
-
-    const bulletUrl = new URL(
-      "/models/SM_Wep_Pistol_Bullet_01.fbx",
-      import.meta.url
-    ).href;
-    fbxLoader.load(bulletUrl, (group) => {
-      this.models.set("bullet", group);
-    });
-
     // bullet line
 
     const bulletLineGeom = new THREE.BufferGeometry();
