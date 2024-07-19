@@ -47,7 +47,7 @@ export class Projectile extends YUKA.MovingEntity {
     );
     if (distanceToTarget < 0.1) {
       // Fire an event to say we hit this location
-      eventListener.fire("projectile-hit", this);
+      //eventListener.fire("projectile-hit", this);
     }
 
     return this;
