@@ -39,9 +39,10 @@ export class GameState {
 
     this.level = this.setupLevel();
     this.player = this.setupPlayer();
+    this.player.position.z = 5;
 
     this.zombieManager = new ZombieManager(this);
-    this.zombieManager.spawnZombie(2, 0, -5);
+    //this.zombieManager.spawnZombie(2, 0, -5);
   }
 
   start() {
