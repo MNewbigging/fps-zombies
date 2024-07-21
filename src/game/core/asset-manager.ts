@@ -189,6 +189,13 @@ export class AssetManager {
       this.prepModel(group);
       this.models.set("ammo-icon", group);
     });
+
+    const healthIconUrl = new URL("/models/healthIcon.fbx", import.meta.url)
+      .href;
+    fbxLoader.load(healthIconUrl, (group) => {
+      this.prepModel(group);
+      this.models.set("health-icon", group);
+    });
   }
 
   private prepModel(model: THREE.Object3D) {

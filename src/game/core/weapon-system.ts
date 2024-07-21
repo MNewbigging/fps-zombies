@@ -27,7 +27,6 @@ export class WeaponSystem {
     // listeners
 
     keyboardListener.on("r", this.onPressR);
-    eventListener.on("zombie-died", this.onZombieDeath);
   }
 
   equipPistol() {
@@ -67,31 +66,5 @@ export class WeaponSystem {
   private onPressR = () => {
     // Reload the current weapon
     this.currentWeapon?.playReloadAnimation();
-  };
-
-  private onZombieDeath = (zombie: Zombie) => {
-    if (!this.currentWeapon) {
-      return;
-    }
-
-    const gameState = this.player.gameState;
-    const assetManager = gameState.assetManager;
-
-    // Drop ammo pickups when low on ammo
-    const reserveAmmo = this.currentWeapon.reserveAmmo;
-    const magLimit = this.currentWeapon.magLimit;
-
-    const lowAmmo = reserveAmmo < magLimit;
-    if (lowAmmo) {
-      const ammoIcon = assetManager.cloneModel("ammo-icon");
-      assetManager.applyModelTexture(ammoIcon, "zombie-atlas");
-
-      const ammoPickup = new AmmoPickup(this.player);
-      ammoPickup.position.copy(zombie.position);
-      ammoPickup.position.y += 1;
-      ammoPickup.scale.multiplyScalar(0.01);
-
-      gameState.addEntity(ammoPickup, ammoIcon);
-    }
   };
 }

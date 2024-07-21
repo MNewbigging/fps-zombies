@@ -9,6 +9,7 @@ import { PathPlanner } from "./path-planner";
 import { getLargestAbsoluteEntries } from "../utils/utils";
 import { ZombieManager } from "./zombie-manager";
 import { StatManager } from "./stat-manager";
+import { PickupManager } from "./pickup-manager";
 
 export interface IntersectionData {
   sceneIntersection?: THREE.Intersection;
@@ -32,6 +33,8 @@ export class GameState {
   pathPlanner: PathPlanner;
   zombieManager: ZombieManager;
 
+  private pickupManager: PickupManager;
+
   constructor(public assetManager: AssetManager) {
     makeAutoObservable(this);
 
@@ -44,8 +47,8 @@ export class GameState {
     this.player.position.set(0, 0, 5);
 
     this.zombieManager = new ZombieManager(this);
-
     this.statManager = new StatManager(this.player);
+    this.pickupManager = new PickupManager(this);
   }
 
   start() {
@@ -256,7 +259,7 @@ export class GameState {
 
     // starting weapon setup
     player.weaponSystem.equipPistol();
-    player.weaponSystem.pickupAmmo();
+    player.weaponSystem.pickupAmmo(1);
     player.weaponSystem.currentWeapon?.reload();
 
     const randomRegion = this.assetManager.navmesh.getRandomRegion();

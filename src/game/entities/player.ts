@@ -28,6 +28,7 @@ export class Player extends YUKA.MovingEntity {
     makeObservable(this, {
       health: observable,
       takeDamage: action,
+      addHealth: action,
     });
 
     // the camera is attached to the player's head
@@ -137,6 +138,10 @@ export class Player extends YUKA.MovingEntity {
 
   takeDamage() {
     this.health = Math.max(0, this.health - 10);
+  }
+
+  addHealth(health: number) {
+    this.health = Math.min(this.health + health, this.maxHealth);
   }
 
   private stayInLevel() {
