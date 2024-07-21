@@ -125,6 +125,13 @@ export class AssetManager {
     gltfLoader.load(levelUrl, (gltf) => {
       const renderComponent = gltf.scene;
       this.prepModel(renderComponent);
+      // reduce shininess
+      gltf.scene.traverse((child) => {
+        if (child instanceof THREE.Mesh) {
+          child.material.roughness = 1;
+        }
+      });
+
       this.models.set("level", renderComponent);
     });
 
@@ -174,6 +181,14 @@ export class AssetManager {
       })
     );
     this.models.set("bullet-trail", bulletTrail);
+
+    // icons
+
+    const ammoIconUrl = new URL("/models/ammoIcon.fbx", import.meta.url).href;
+    fbxLoader.load(ammoIconUrl, (group) => {
+      this.prepModel(group);
+      this.models.set("ammo-icon", group);
+    });
   }
 
   private prepModel(model: THREE.Object3D) {

@@ -9,9 +9,7 @@ export class Pistol extends Weapon {
 
     // setup pistol properties
 
-    this.magAmmo = 12;
     this.magLimit = 12;
-    this.reserveAmmo = 12;
     this.reserveLimit = 120;
     this.setRpm(300);
 

@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import * as YUKA from "yuka";
+import { Zombie } from "../entities/zombie";
 
 // Todo - find a better place for stuff like this
 export interface EntityAnimationEvent {
@@ -10,6 +11,7 @@ export interface EntityAnimationEvent {
 export interface EventMap {
   "entity-anim-end": EntityAnimationEvent;
   "entity-anim-loop": EntityAnimationEvent;
+  "zombie-died": Zombie;
 }
 
 type EventCallback = (event: any) => void;

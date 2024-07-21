@@ -30,6 +30,14 @@ export class AppState {
     return this.gameState?.player.health ?? 0;
   }
 
+  @computed getCurrentWave() {
+    return this.gameState?.zombieManager.wave;
+  }
+
+  @computed getRemainingWaveZombies() {
+    return this.gameState?.zombieManager.waveZombies;
+  }
+
   @action startGame = () => {
     // Then setup a new game state
     this.gameState = new GameState(this.assetManager);

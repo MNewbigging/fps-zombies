@@ -220,6 +220,11 @@ export class Zombie extends YUKA.Vehicle {
       new THREE.Color("white")
     );
     flashAnim.start();
+
+    // Dead yet?
+    if (this.isDead()) {
+      eventListener.fire("zombie-died", this);
+    }
   }
 
   private onAnimationEnd = (e: any) => {

@@ -2,13 +2,33 @@ import * as THREE from "three";
 import * as YUKA from "yuka";
 import { GameState } from "./game-state";
 import { Zombie } from "../entities/zombie";
+import { action, makeAutoObservable, observable } from "mobx";
+import { eventListener } from "../listeners/event-listener";
 
 export class ZombieManager {
   zombies: Zombie[] = [];
+  @observable wave = 0;
+  @observable waveZombies = 10;
 
-  constructor(private gameState: GameState) {}
+  constructor(private gameState: GameState) {
+    makeAutoObservable(this);
 
-  spawnZombie(x: number, y: number, z: number) {
+    eventListener.on("zombie-died", this.onZombieDied);
+  }
+
+  @action startNextWave() {
+    this.wave++;
+
+    // Spawn zombies for this wave all at once
+    const zombieCount = 10;
+    for (let i = 0; i < zombieCount; i++) {
+      this.spawnZombie();
+    }
+
+    this.waveZombies = zombieCount;
+  }
+
+  spawnZombie() {
     const assetManager = this.gameState.assetManager;
 
     // Setup the render component
@@ -29,8 +49,11 @@ export class ZombieManager {
     const zombie = new Zombie(renderComponent, this.gameState);
     zombie.scale.multiplyScalar(0.01); // massive synty models
 
-    // Position according to spawn point
-    zombie.position.set(x, y, z);
+    // Position in a random spawn point
+    const randomRegion = assetManager.navmesh.getRandomRegion();
+    const spawnPoint = randomRegion.computeCentroid().centroid;
+
+    zombie.position.copy(spawnPoint);
 
     // Add the zombie
     this.gameState.addEntity(zombie, renderComponent);
@@ -40,4 +63,21 @@ export class ZombieManager {
   removeZombie(zombie: YUKA.GameEntity) {
     this.zombies = this.zombies.filter((z) => z !== zombie);
   }
+
+  private onZombieDied = (zombie: Zombie) => {
+    this.waveZombies--;
+
+    // Next wave?
+    if (this.waveZombies === 0) {
+      this.startNextWave();
+    }
+  };
 }
+
+/**
+ * Game plays over multiple waves.
+ *
+ * Each wave has n zombies
+ *
+ * Spawn zombies for a wave over time (not all at once)?
+ */

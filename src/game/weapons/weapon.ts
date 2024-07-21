@@ -68,10 +68,24 @@ export class Weapon extends YUKA.GameEntity {
     // start the equip animation
   }
 
-  reload() {
+  playReloadAnimation() {
     if (this.reserveAmmo > 0) {
       // Play the animation, when it ends it'll call this.onAnimationEnd
       this.reloadAction?.reset().play();
+    }
+  }
+
+  reload() {
+    // Add any bullets left in ejected mag back into reserve
+    this.reserveAmmo += this.magAmmo;
+
+    // Fill mag from reserve
+    if (this.reserveAmmo >= this.magLimit) {
+      this.magAmmo = this.magLimit;
+      this.reserveAmmo -= this.magLimit;
+    } else {
+      this.magAmmo = this.reserveAmmo;
+      this.reserveAmmo = 0;
     }
   }
 
@@ -146,17 +160,6 @@ export class Weapon extends YUKA.GameEntity {
 
   private onAnimationEnd = () => {
     // For now, the only mixer animation on the weapon is reload
-
-    // Add any bullets left in ejected mag back into reserve
-    this.reserveAmmo += this.magAmmo;
-
-    // Fill mag from reserve
-    if (this.reserveAmmo >= this.magLimit) {
-      this.magAmmo = this.magLimit;
-      this.reserveAmmo -= this.magLimit;
-    } else {
-      this.magAmmo = this.reserveAmmo;
-      this.reserveAmmo = 0;
-    }
+    this.reload();
   };
 }

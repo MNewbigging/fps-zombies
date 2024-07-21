@@ -39,13 +39,22 @@ export class GameState {
 
     this.level = this.setupLevel();
     this.player = this.setupPlayer();
-    this.player.position.z = 5;
+    this.player.position.set(0, 0, 5);
+
+    // Testing
+    // const ammoIcon = this.assetManager.cloneModel("ammo-icon");
+    // assetManager.applyModelTexture(ammoIcon, "zombie-atlas");
+    // ammoIcon.position.set(0, 1.5, 4);
+    // ammoIcon.scale.multiplyScalar(0.01);
+    // this.scene.add(ammoIcon);
+    // console.log("ammo icon", ammoIcon);
 
     this.zombieManager = new ZombieManager(this);
-    //this.zombieManager.spawnZombie(2, 0, -5);
   }
 
   start() {
+    this.zombieManager.startNextWave();
+
     this.update();
   }
 
@@ -249,7 +258,14 @@ export class GameState {
 
     this.entityManager.add(player);
 
+    // starting weapon setup
     player.weaponSystem.equipPistol();
+    player.weaponSystem.pickupAmmo();
+    player.weaponSystem.currentWeapon?.reload();
+
+    const randomRegion = this.assetManager.navmesh.getRandomRegion();
+    const regionCenter = randomRegion.computeCentroid().centroid;
+    player.position.copy(regionCenter);
 
     return player;
   }
