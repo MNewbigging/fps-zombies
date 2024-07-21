@@ -104,7 +104,7 @@ export class Player extends YUKA.MovingEntity {
     // Guns are completely accurate for now, do bullet spread here later
 
     // Get any scene & entity intersection
-    const intersection = this.gameState.getIntersection();
+    const intersection = this.gameState.getShotIntersection();
 
     if (intersection.sceneIntersection) {
       targetPosition.set(

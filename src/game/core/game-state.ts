@@ -113,7 +113,7 @@ export class GameState {
     }
   }
 
-  getIntersection(): IntersectionData {
+  getShotIntersection(): IntersectionData {
     const data: IntersectionData = {};
 
     this.raycaster.setFromCamera({ x: 0, y: 0 }, this.camera);

@@ -49,19 +49,6 @@ export class WeaponSystem {
     this.currentWeapon.addAmmo(magLimit * mags);
   }
 
-  hasLowAmmo() {
-    if (!this.currentWeapon) {
-      return undefined;
-    }
-
-    // Determines if the current weapon is low on ammo
-    // Used in spawning ammo pickups
-    const reserveAmmo = this.currentWeapon.reserveAmmo;
-    const magLimit = this.currentWeapon.magLimit;
-
-    return reserveAmmo < magLimit;
-  }
-
   private setupPistolRenderComponent() {
     const assetManager = this.player.gameState.assetManager;
     const scene = this.player.gameState.scene;
@@ -83,21 +70,28 @@ export class WeaponSystem {
   };
 
   private onZombieDeath = (zombie: Zombie) => {
+    if (!this.currentWeapon) {
+      return;
+    }
+
     const gameState = this.player.gameState;
     const assetManager = gameState.assetManager;
 
     // Drop ammo pickups when low on ammo
-    const lowAmmo = this.hasLowAmmo();
+    const reserveAmmo = this.currentWeapon.reserveAmmo;
+    const magLimit = this.currentWeapon.magLimit;
 
-    // Render component
-    const ammoIcon = assetManager.cloneModel("ammo-icon");
-    assetManager.applyModelTexture(ammoIcon, "zombie-atlas");
+    const lowAmmo = reserveAmmo < magLimit;
+    if (lowAmmo) {
+      const ammoIcon = assetManager.cloneModel("ammo-icon");
+      assetManager.applyModelTexture(ammoIcon, "zombie-atlas");
 
-    const ammoPickup = new AmmoPickup(ammoIcon);
-    ammoPickup.position.copy(zombie.position);
-    ammoPickup.position.y += 1;
-    ammoPickup.scale.multiplyScalar(0.01);
+      const ammoPickup = new AmmoPickup(this.player);
+      ammoPickup.position.copy(zombie.position);
+      ammoPickup.position.y += 1;
+      ammoPickup.scale.multiplyScalar(0.01);
 
-    gameState.addEntity(ammoPickup, ammoIcon);
+      gameState.addEntity(ammoPickup, ammoIcon);
+    }
   };
 }
