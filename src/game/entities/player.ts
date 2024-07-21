@@ -13,6 +13,7 @@ export class Player extends YUKA.MovingEntity {
   weaponSystem: WeaponSystem;
 
   health = 100;
+  maxHealth = 100;
 
   private currentRegion: YUKA.Polygon;
   private currentPosition: YUKA.Vector3;
@@ -135,7 +136,7 @@ export class Player extends YUKA.MovingEntity {
   }
 
   takeDamage() {
-    this.health = Math.max(0, this.health - 25);
+    this.health = Math.max(0, this.health - 10);
   }
 
   private stayInLevel() {

@@ -2,7 +2,6 @@
   position: absolute;
   bottom: 10px;
   left: 10px;
-  width: 120px;
   height: 26px;
   border-radius: 2px;
 
@@ -12,6 +11,6 @@
     background-color: rgb(61, 224, 61);
     height: 100%;
 
-    transition: width 0.5s ease-out;
+    transition: width 0.25s ease-out;
   }
 }

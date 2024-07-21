@@ -73,11 +73,3 @@ export class ZombieManager {
     }
   };
 }
-
-/**
- * Game plays over multiple waves.
- *
- * Each wave has n zombies
- *
- * Spawn zombies for a wave over time (not all at once)?
- */

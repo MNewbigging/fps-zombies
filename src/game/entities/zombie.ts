@@ -49,7 +49,7 @@ export class Zombie extends YUKA.Vehicle {
 
     this.maxTurnRate = Math.PI / 4;
     this.updateOrientation = false;
-    this.maxSpeed = 0.25;
+    this.maxSpeed = 8; //0.25;
 
     this.followPathBehaviour = new YUKA.FollowPathBehavior();
     this.followPathBehaviour.active = false;

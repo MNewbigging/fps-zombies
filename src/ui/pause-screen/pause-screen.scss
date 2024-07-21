@@ -5,11 +5,47 @@
   left: 0;
   right: 0;
 
+  // Darkish faded filter over the canvas
   background-color: rgba(28, 33, 39, 0.7);
 
   display: flex;
   justify-content: center;
   align-items: center;
+
+  .window {
+    width: 500px;
+    height: 200px;
+    border-radius: 6px;
+    background-color: #1c2127;
+
+    animation: appear 0.3s forwards;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .stats-area {
+    color: white;
+    font-size: 20px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .resume-button {
+    user-select: none;
+    cursor: pointer;
+    border: 1px solid white;
+    padding: 10px;
+    color: white;
+    font-weight: bolder;
+    font-size: 20px;
+    letter-spacing: 5px;
+  }
 }
 
 .menu-button {
@@ -17,8 +53,8 @@
   pointer-events: none;
   width: 200px;
   height: 60px;
-  background-color: white;
-  color: black;
+  background-color: green;
+  color: white;
   font-weight: bolder;
   font-size: 26px;
   letter-spacing: 5px;
@@ -42,5 +78,16 @@
     pointer-events: all;
     background-color: white;
     cursor: pointer;
+  }
+}
+
+@keyframes appear {
+  0% {
+    pointer-events: none;
+    transform: scale(0);
+  }
+  100% {
+    pointer-events: all;
+    transform: scale(1);
   }
 }

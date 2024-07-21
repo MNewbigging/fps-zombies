@@ -26,10 +26,6 @@ export class AppState {
     return this.gameState?.player.weaponSystem.currentWeapon?.reserveAmmo ?? 0;
   }
 
-  @computed getPlayerHealth() {
-    return this.gameState?.player.health ?? 0;
-  }
-
   @computed getCurrentWave() {
     return this.gameState?.zombieManager.wave;
   }

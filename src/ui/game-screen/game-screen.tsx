@@ -13,11 +13,13 @@ interface GameScreenProps {
 
 export const GameScreen: React.FC<GameScreenProps> = observer(
   ({ appState }) => {
+    const gameState = appState.gameState;
+
     return (
       <div className="game-screen">
         <Reticle />
         <AmmoDisplay appState={appState} />
-        <HealthDisplay appState={appState} />
+        {gameState && <HealthDisplay gameState={gameState} />}
         <WaveDisplay appState={appState} />
       </div>
     );

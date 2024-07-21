@@ -8,6 +8,7 @@ import { Player } from "../entities/player";
 import { PathPlanner } from "./path-planner";
 import { getLargestAbsoluteEntries } from "../utils/utils";
 import { ZombieManager } from "./zombie-manager";
+import { StatManager } from "./stat-manager";
 
 export interface IntersectionData {
   sceneIntersection?: THREE.Intersection;
@@ -16,6 +17,7 @@ export interface IntersectionData {
 
 export class GameState {
   @observable paused = false;
+  statManager: StatManager;
 
   scene = new THREE.Scene();
   private camera = new THREE.PerspectiveCamera();
@@ -41,15 +43,9 @@ export class GameState {
     this.player = this.setupPlayer();
     this.player.position.set(0, 0, 5);
 
-    // Testing
-    // const ammoIcon = this.assetManager.cloneModel("ammo-icon");
-    // assetManager.applyModelTexture(ammoIcon, "zombie-atlas");
-    // ammoIcon.position.set(0, 1.5, 4);
-    // ammoIcon.scale.multiplyScalar(0.01);
-    // this.scene.add(ammoIcon);
-    // console.log("ammo icon", ammoIcon);
-
     this.zombieManager = new ZombieManager(this);
+
+    this.statManager = new StatManager(this.player);
   }
 
   start() {
