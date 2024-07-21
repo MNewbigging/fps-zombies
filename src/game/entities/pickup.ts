@@ -1,10 +1,12 @@
 import * as YUKA from "yuka";
 import { Player } from "./player";
+import { PickupType } from "../core/pickup-manager";
+import { eventListener } from "../listeners/event-listener";
 
 export abstract class Pickup extends YUKA.GameEntity {
   private pickupRange = 0.5;
 
-  constructor(protected player: Player) {
+  constructor(public pickupType: PickupType, protected player: Player) {
     super();
 
     this.canActivateTrigger = false;
@@ -16,6 +18,7 @@ export abstract class Pickup extends YUKA.GameEntity {
     if (this.shouldPickup()) {
       this.onPickup();
       this.player.gameState.removeEntity(this);
+      eventListener.fire("got-pickup", this.pickupType);
     }
 
     this.spin(delta);

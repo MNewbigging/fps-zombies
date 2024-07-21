@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import * as YUKA from "yuka";
 import { Zombie } from "../entities/zombie";
+import { PickupType } from "../core/pickup-manager";
 
 // Todo - find a better place for stuff like this
 export interface EntityAnimationEvent {
@@ -12,6 +13,7 @@ export interface EventMap {
   "entity-anim-end": EntityAnimationEvent;
   "entity-anim-loop": EntityAnimationEvent;
   "zombie-died": Zombie;
+  "got-pickup": PickupType;
 }
 
 type EventCallback = (event: any) => void;
