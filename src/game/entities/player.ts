@@ -1,5 +1,4 @@
 import * as YUKA from "yuka";
-import * as THREE from "three";
 import { FpsControls } from "../controls/fps-controls";
 import { GameState } from "../core/game-state";
 import { WeaponSystem } from "../core/weapon-system";
@@ -44,7 +43,7 @@ export class Player extends YUKA.MovingEntity {
     this.fpsControls = new FpsControls(this);
     this.fpsControls.enable();
 
-    this.maxSpeed = 6;
+    this.maxSpeed = 4;
 
     // get closest navmesh region to player
 

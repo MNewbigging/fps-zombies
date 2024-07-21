@@ -22,15 +22,20 @@ export const PauseScreen: React.FC<PauseScreenProps> = observer(
           <div className="stats-area">
             <div className="upgrade-points">Upgrade points {upgradePoints}</div>
 
-            <div className="player-stats">
-              <StatRow
-                name="Max health"
-                curValue={currentStats.maxHealth}
-                upgradedValue={upgradedStats.maxHealth}
-                onLeftClick={statMgr.increaseMaxHealth}
-                onRightClick={statMgr.decreaseMaxHealth}
-              />
-            </div>
+            <StatRow
+              name="Max health"
+              curValue={currentStats.maxHealth}
+              upgradedValue={upgradedStats.maxHealth}
+              onLeftClick={statMgr.increaseMaxHealth}
+              onRightClick={statMgr.decreaseMaxHealth}
+            />
+            <StatRow
+              name="Move speed"
+              curValue={currentStats.moveSpeed}
+              upgradedValue={upgradedStats.moveSpeed}
+              onLeftClick={statMgr.increaseMoveSpeed}
+              onRightClick={statMgr.decreaseMoveSpeed}
+            />
           </div>
 
           <div

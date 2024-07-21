@@ -5,6 +5,7 @@ import { eventListener } from "../listeners/event-listener";
 
 export interface Stats {
   maxHealth: number;
+  moveSpeed: number;
 }
 
 export class StatManager {
@@ -23,18 +24,16 @@ export class StatManager {
   @computed getCurrentStats(): Stats {
     return {
       maxHealth: this.player.maxHealth,
+      moveSpeed: this.player.maxSpeed,
     };
   }
 
   applyUpgrades() {
     // Apply new values from stats copy to real stats
     this.player.maxHealth = this.upgradedStats.maxHealth;
+    this.player.maxSpeed = this.upgradedStats.moveSpeed;
 
     // Update the stats copy
-    this.upgradedStats = { ...this.getCurrentStats() };
-  }
-
-  cancelUpgrades() {
     this.upgradedStats = { ...this.getCurrentStats() };
   }
 
@@ -47,15 +46,28 @@ export class StatManager {
 
   @action decreaseMaxHealth = () => {
     const currentValue = this.getCurrentStats().maxHealth;
-
     if (this.upgradedStats.maxHealth === currentValue) {
       return;
     }
 
-    this.upgradedStats.maxHealth = Math.max(
-      this.upgradedStats.maxHealth - 10,
-      currentValue
-    );
+    this.upgradedStats.maxHealth -= 10;
+    this.upgradePoints++;
+  };
+
+  @action increaseMoveSpeed = () => {
+    if (this.upgradePoints > 0) {
+      this.upgradedStats.moveSpeed += 0.5;
+      this.upgradePoints--;
+    }
+  };
+
+  @action decreaseMoveSpeed = () => {
+    const currentValue = this.getCurrentStats().moveSpeed;
+    if (this.upgradedStats.moveSpeed === currentValue) {
+      return;
+    }
+
+    this.upgradedStats.moveSpeed -= 0.5;
     this.upgradePoints++;
   };
 

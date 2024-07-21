@@ -69,7 +69,7 @@ export class Weapon extends YUKA.GameEntity {
   }
 
   playReloadAnimation() {
-    if (this.reserveAmmo > 0) {
+    if (this.reserveAmmo > 0 && this.magAmmo !== this.magLimit) {
       // Play the animation, when it ends it'll call this.onAnimationEnd
       this.reloadAction?.reset().play();
     }
