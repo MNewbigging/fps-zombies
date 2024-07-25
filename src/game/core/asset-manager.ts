@@ -135,16 +135,112 @@ export class AssetManager {
       this.models.set("level", renderComponent);
     });
 
-    // zombie
+    // zombies
 
-    const zombieUrl = new URL(
+    const businessman = new URL(
       "/models/SK_Zombie_Businessman_Male_01.fbx",
       import.meta.url
     ).href;
-    fbxLoader.load(zombieUrl, (group) => {
-      //this.prepModel(group);
-      group.name = "zombie";
-      this.models.set("zombie", group);
+    fbxLoader.load(businessman, (group) => {
+      group.name = "zombie-businessman";
+      this.models.set(group.name, group);
+    });
+
+    const daughter = new URL(
+      "/models/SK_Zombie_Daughter_Female_01.fbx",
+      import.meta.url
+    ).href;
+    fbxLoader.load(daughter, (group) => {
+      group.name = "zombie-daughter";
+      this.models.set(group.name, group);
+    });
+
+    const fastfood = new URL(
+      "/models/SK_Zombie_FastfoodWorker_Male_01.fbx",
+      import.meta.url
+    ).href;
+    fbxLoader.load(fastfood, (group) => {
+      group.name = "zombie-fastfood";
+      this.models.set(group.name, group);
+    });
+
+    const gamergirl = new URL(
+      "/models/SK_Zombie_GamerGirl_Female_01.fbx",
+      import.meta.url
+    ).href;
+    fbxLoader.load(gamergirl, (group) => {
+      group.name = "zombie-gamergirl";
+      this.models.set(group.name, group);
+    });
+
+    const father1 = new URL(
+      "/models/SK_Zombie_Father_Male_01.fbx",
+      import.meta.url
+    ).href;
+    fbxLoader.load(father1, (group) => {
+      group.name = "zombie-father1";
+      this.models.set(group.name, group);
+    });
+
+    const father2 = new URL(
+      "/models/SK_Zombie_Father_Male_02.fbx",
+      import.meta.url
+    ).href;
+    fbxLoader.load(father2, (group) => {
+      group.name = "zombie-father2";
+      this.models.set(group.name, group);
+    });
+
+    const gangster = new URL(
+      "/models/SK_Zombie_Gangster_Male_01.fbx",
+      import.meta.url
+    ).href;
+    fbxLoader.load(gangster, (group) => {
+      group.name = "zombie-gangster";
+      this.models.set(group.name, group);
+    });
+
+    const grandma = new URL(
+      "/models/SK_Zombie_Grandma_Female_01.fbx",
+      import.meta.url
+    ).href;
+    fbxLoader.load(grandma, (group) => {
+      group.name = "zombie-grandma";
+      this.models.set(group.name, group);
+    });
+
+    const hobo = new URL("/models/SK_Zombie_Hobo_Male_01.fbx", import.meta.url)
+      .href;
+    fbxLoader.load(hobo, (group) => {
+      group.name = "zombie-hobo";
+      this.models.set(group.name, group);
+    });
+
+    const jacketfemale = new URL(
+      "/models/SK_Zombie_Jacket_Female_01.fbx",
+      import.meta.url
+    ).href;
+    fbxLoader.load(jacketfemale, (group) => {
+      group.name = "zombie-jacketfemale";
+      this.models.set(group.name, group);
+    });
+
+    const punkfemale = new URL(
+      "/models/SK_Zombie_Punk_Female_01.fbx",
+      import.meta.url
+    ).href;
+    fbxLoader.load(punkfemale, (group) => {
+      group.name = "zombie-punkfemale";
+      this.models.set(group.name, group);
+    });
+
+    const roadworker = new URL(
+      "/models/SK_Zombie_Roadworker_Male_01.fbx",
+      import.meta.url
+    ).href;
+    fbxLoader.load(roadworker, (group) => {
+      group.name = "zombie-roadworker";
+      this.models.set(group.name, group);
     });
 
     // pistol

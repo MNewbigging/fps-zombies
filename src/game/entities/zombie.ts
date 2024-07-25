@@ -143,7 +143,7 @@ export class Zombie extends YUKA.Vehicle {
       return;
     }
 
-    nextAction.reset().setEffectiveTimeScale(1).setEffectiveWeight(1);
+    nextAction.reset();
 
     this.currentAction
       ? nextAction.crossFadeFrom(this.currentAction, 0.5, false).play()

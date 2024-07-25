@@ -10,8 +10,19 @@ export class ZombieManager {
   @observable wave = 0;
   @observable waveZombies = 10;
 
+  private zombieNames: string[] = [];
+
   constructor(private gameState: GameState) {
     makeAutoObservable(this);
+
+    // Setup zombie names
+    this.gameState.assetManager.models.forEach(
+      (model: THREE.Group, name: string) => {
+        if (name.includes("zombie")) {
+          this.zombieNames.push(name);
+        }
+      }
+    );
 
     eventListener.on("zombie-died", this.onZombieDied);
   }
@@ -32,7 +43,8 @@ export class ZombieManager {
     const assetManager = this.gameState.assetManager;
 
     // Setup the render component
-    const renderComponent = assetManager.cloneModel("zombie");
+
+    const renderComponent = assetManager.cloneModel(this.getRandomZombieName());
     const texture = assetManager.textures.get("zombie-atlas");
     renderComponent.traverse((child) => {
       if (child instanceof THREE.Mesh) {
@@ -72,4 +84,10 @@ export class ZombieManager {
       this.startNextWave();
     }
   };
+
+  private getRandomZombieName(): string {
+    const rnd = Math.floor(Math.random() * this.zombieNames.length);
+
+    return this.zombieNames[rnd];
+  }
 }
